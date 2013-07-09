@@ -62,23 +62,23 @@ public class Help extends DialogFragment {
 
     public void setCurrent(int current) {
         switch (current) {
-            case KEY_VIEW:
+            case KEY_PAGE:
                 setHelp(mKeyboardMessage);
                 setTitle("Help - Keyboard");
                 return;
-            case CONT_VIEW:
+            case CONT_PAGE:
                 setHelp(mContactsMessage);
                 setTitle("Help - Contacts");
                 return;
-            case CALC_VIEW:
+            case CALC_PAGE:
                 setHelp(mCalculationMessage);
                 setTitle("Help - Calculation");
                 return;
-            case CONC_VIEW:
+            case CONC_PAGE:
                 setHelp(mOscillationMessage);
                 setTitle("Help - Oscillation");
                 return;
-            case CONFIG_VIEW:
+            case CONFIG_PAGE:
                 setHelp(mConfigurationMessage);
                 setTitle("Help - Configuration");
                 return;

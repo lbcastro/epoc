@@ -1,11 +1,10 @@
-
 package com.castro.epoc;
 
-import static com.castro.epoc.Global.CALC_VIEW;
-import static com.castro.epoc.Global.CONC_VIEW;
-import static com.castro.epoc.Global.CONFIG_VIEW;
-import static com.castro.epoc.Global.CONT_VIEW;
-import static com.castro.epoc.Global.KEY_VIEW;
+import static com.castro.epoc.Global.CALC_PAGE;
+import static com.castro.epoc.Global.CONC_PAGE;
+import static com.castro.epoc.Global.CONFIG_PAGE;
+import static com.castro.epoc.Global.CONT_PAGE;
+import static com.castro.epoc.Global.KEY_PAGE;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -23,12 +22,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class MainActivity extends FragmentActivity implements
         PropertyChangeListener {
-
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -42,21 +40,21 @@ public class MainActivity extends FragmentActivity implements
         public Fragment getItem(int position) {
             Fragment fragment = new Fragment();
             switch (position) {
-                case CONFIG_VIEW:
-                    fragment = new Configuration();
-                    break;
-                case CONC_VIEW:
-                    fragment = new Oscillation();
-                    break;
-                case KEY_VIEW:
-                    fragment = new Keyboard();
-                    break;
-                case CONT_VIEW:
-                    fragment = new Contacts();
-                    break;
-                case CALC_VIEW:
-                    fragment = new Calculation();
-                    break;
+            case CONFIG_PAGE:
+                fragment = new Configuration();
+                break;
+            case CONC_PAGE:
+                fragment = new Oscillation();
+                break;
+            case KEY_PAGE:
+                fragment = new Keyboard();
+                break;
+            case CONT_PAGE:
+                fragment = new Contacts();
+                break;
+            case CALC_PAGE:
+                fragment = new Calculation();
+                break;
             }
             return fragment;
         }
@@ -65,37 +63,123 @@ public class MainActivity extends FragmentActivity implements
         public CharSequence getPageTitle(int position) {
             Locale locale = Locale.getDefault();
             switch (position) {
-                case KEY_VIEW:
-                    return getString(R.string.title_activity_keyboard).toUpperCase(
-                            locale);
-                case CONT_VIEW:
-                    return getString(R.string.title_activity_contacts).toUpperCase(
-                            locale);
-                case CALC_VIEW:
-                    return getString(R.string.title_activity_calculation)
-                            .toUpperCase(locale);
-                case CONC_VIEW:
-                    return getString(R.string.title_activity_oscillation)
-                            .toUpperCase(locale);
-                case CONFIG_VIEW:
-                    return getString(R.string.title_activity_configuration)
-                            .toUpperCase(locale);
+            case KEY_PAGE:
+                return getString(R.string.title_activity_keyboard).toUpperCase(
+                        locale);
+            case CONT_PAGE:
+                return getString(R.string.title_activity_contacts).toUpperCase(
+                        locale);
+            case CALC_PAGE:
+                return getString(R.string.title_activity_calculation)
+                        .toUpperCase(locale);
+            case CONC_PAGE:
+                return getString(R.string.title_activity_oscillation)
+                        .toUpperCase(locale);
+            case CONFIG_PAGE:
+                return getString(R.string.title_activity_configuration)
+                        .toUpperCase(locale);
             }
             return null;
+        }
+    }
+
+    // ViewPager transformer, to customize the animation.
+    public class ZoomOut implements ViewPager.PageTransformer {
+        private static final float MIN_SCALE = 0.98f;
+        private static final float MIN_ALPHA = 1f;
+
+        public void transformPage(View view, float position) {
+            int pageWidth = view.getWidth();
+            int pageHeight = view.getHeight();
+            if (position < -1) {
+                view.setAlpha(0);
+            } else if (position <= 1) { // [-1,1]
+                // Modify the default slide transition to shrink the page as
+                // well
+                float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
+                float vertMargin = pageHeight * (1 - scaleFactor) / 2;
+                float horzMargin = pageWidth * (1 - scaleFactor) / 2;
+                if (position < 0) {
+                    view.setTranslationX(horzMargin - vertMargin / 2);
+                } else {
+                    view.setTranslationX(-horzMargin + vertMargin / 2);
+                }
+                // Scale the page down (between MIN_SCALE and 1)
+                view.setScaleX(scaleFactor);
+                view.setScaleY(scaleFactor);
+                // Fade the page relative to its size.
+                view.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE)
+                        / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+            } else {
+                view.setAlpha(0);
+            }
         }
     }
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private UsbManager mManager;
+    private Recording mRecording;
+    private EyesNavigation mEyesNavigation;
     private int mPages = 5;
     private Menu mMenu;
 
+    private void actionEyes() {
+        if (EyesNavigation.getActive()) {
+            mEyesNavigation = new EyesNavigation(mMenu, mViewPager);
+            mEyesNavigation.start();
+        } else {
+            mEyesNavigation.stop();
+        }
+        // EyesNavigation.setActive(
+        // (EyesNavigation.getActive() ? false : true), mMenu);
+    }
+
+    private void actionHelp() {
+        Help help = new Help();
+        help.setCurrent(mViewPager.getCurrentItem());
+        help.show(getSupportFragmentManager(), null);
+    }
+
+    private void actionProfiles() {
+        Profiles profiles = new Profiles();
+        profiles.userSelection(this).show();
+    }
+
+    private void actionRec() {
+        if (mRecording == null) {
+            mRecording = new Recording();
+            mRecording.start();
+        } else {
+            mRecording.stop();
+            mRecording = null;
+        }
+    }
+
+    private void actionRecon() {
+        Connection.getInstance().isConnected(mManager, this);
+    }
+
+    // Opens the profiles selection dialog if no profile is currently selected.
     private void checkProfiles() {
         if (Profiles.getActiveUser() == null) {
             Profiles profiles = new Profiles();
             profiles.userSelection(this).show();
         }
+    }
+
+    // Dialog to quickly switch the ViewPager fragment.
+    private void navigationDialog() {
+        final CharSequence[] sections = { "Keyboard", "Contacts",
+                "Calculation", "Oscillation", "Configuration" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setItems(sections, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mViewPager.setCurrentItem(which);
+            }
+        });
+        builder.create().show();
     }
 
     @Override
@@ -110,6 +194,7 @@ public class MainActivity extends FragmentActivity implements
                 getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setPageTransformer(true, new ZoomOut());
         Connection.getInstance().setMainListener(this);
         Training.updateLda();
         toggleMenuBarIcons(Connection.getInstance().getConnection());
@@ -126,26 +211,27 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-            case R.id.action_profiles:
-                Profiles profiles = new Profiles();
-                profiles.userSelection(this).show();
-                return true;
-            case R.id.action_recon:
-                Connection.getInstance().isConnected(mManager, this);
-                return true;
-            case R.id.action_help:
-                Help help = new Help();
-                help.setCurrent(mViewPager.getCurrentItem());
-                help.show(getSupportFragmentManager(), null);
-                return true;
-            case R.id.action_jump:
-                navigationDialog();
-                return true;
-                // TODO: EYES NAVIGATION TOGGLE
-                // TODO: GLOBAL RECORDING
-            default:
-                return super.onOptionsItemSelected(item);
+        case android.R.id.home:
+        case R.id.action_profiles:
+            actionProfiles();
+            return true;
+        case R.id.action_recon:
+            actionRecon();
+            return true;
+        case R.id.action_help:
+            actionHelp();
+            return true;
+        case R.id.action_jump:
+            navigationDialog();
+            return true;
+        case R.id.action_eyes:
+            actionEyes();
+            return true;
+        case R.id.action_rec:
+            actionRec();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -175,6 +261,7 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
+    // Changes MenuBar icons based on a specified boolean.
     private void toggleMenuBarIcons(boolean b) {
         if (mMenu == null) {
             return;
@@ -183,21 +270,5 @@ public class MainActivity extends FragmentActivity implements
         mMenu.findItem(R.id.action_rec).setVisible(b ? true : false);
         mMenu.findItem(R.id.action_eyes).setVisible(b ? true : false);
         mMenu.findItem(R.id.action_recon).setVisible(b ? false : true);
-    }
-
-    private void navigationDialog() {
-        final CharSequence[] sections = {
-                "Keyboard", "Contacts",
-                "Calculation", "Oscillation", "Configuration"
-        };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setItems(sections, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mViewPager.setCurrentItem(which);
-            }
-        });
-        builder.create().show();
     }
 }

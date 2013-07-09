@@ -16,12 +16,12 @@ public final class Global {
     public static final int CHANNELS = 14;
     public static final int RECENT_TIMEOUT = 50;
     public static final int BANDS_MAX = 31;
-    public static final int KEY_VIEW = 0;
-    public static final int CONT_VIEW = 1;
-    public static final int CALC_VIEW = 2;
-    public static final int CONC_VIEW = 3;
-    public static final int CONFIG_VIEW = 4;
-    public static final String[] eventsList = {
+    public static final int KEY_PAGE = 0;
+    public static final int CONT_PAGE = 1;
+    public static final int CALC_PAGE = 2;
+    public static final int CONC_PAGE = 3;
+    public static final int CONFIG_PAGE = 4;
+    public static final String[] EVENTS_LIST = {
             "Baseline", "Wink left", "Wink right",
             "Look left", "Look right"
     };

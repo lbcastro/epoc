@@ -36,6 +36,7 @@ public class Calculation extends Fragment implements PropertyChangeListener {
 	private boolean mCalculationInitiated = false;
 	private int mLastResult = 0;
 	private int mCalculationsCounter = 0;
+	private boolean mEyesNavigationWasActive = false;
 	private final static Handler handler = new Handler();
 	private Runnable startCalculation = new Runnable() {
 
@@ -281,11 +282,13 @@ public class Calculation extends Fragment implements PropertyChangeListener {
 
 	private void toggleStart() {
 		if (!mCalculationInitiated) {
-			// TODO: Toggle eyes navigation.
+			mEyesNavigationWasActive = EyesNavigation.getActive();
+			EyesNavigation.setActive(false);
 			mCalculationInitiated = true;
 			handler.post(startCalculation);
 		} else {
 			mCalculationInitiated = false;
+			EyesNavigation.setActive(mEyesNavigationWasActive);
 			handler.removeCallbacks(startCalculation);
 			mResultText.setText("Start");
 			mResultText.setTextColor(Color.WHITE);
