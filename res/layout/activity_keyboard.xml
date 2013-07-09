@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/keyboard_relative1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/happy_baloons"
+    tools:context=".Main" >
+
+    <RelativeLayout
+        android:id="@+id/keyboard_relative2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <TextView
+            android:id="@+id/letter_a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:text="A"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/letter_b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_a"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_a"
+            android:text="B"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_a"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_b"
+            android:text="C"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_a"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_c"
+            android:text="D"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_e"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_a"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_d"
+            android:text="E"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_f"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_a"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_e"
+            android:text="F"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_g"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_a"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_f"
+            android:text="G"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_h"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_a"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_g"
+            android:text="H"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_i"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_a"
+            android:layout_toRightOf="@id/letter_h"
+            android:text="I"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_j"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/letter_a"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_below="@id/letter_a"
+            android:layout_marginRight="15dip"
+            android:text="J"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_k"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_j"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_j"
+            android:text="K"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_l"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_j"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_k"
+            android:text="L"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_j"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_l"
+            android:text="M"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_j"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_m"
+            android:text="N"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_o"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_j"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_n"
+            android:text="O"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_p"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_j"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_o"
+            android:text="P"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_q"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_j"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_p"
+            android:text="Q"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_r"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_j"
+            android:layout_toRightOf="@id/letter_q"
+            android:text="R"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_s"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/letter_j"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_below="@id/letter_j"
+            android:layout_marginRight="15dip"
+            android:text="S"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_t"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_s"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_s"
+            android:text="T"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_u"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_s"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_t"
+            android:text="U"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_v"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_s"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_u"
+            android:text="V"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_w"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_s"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_v"
+            android:text="W"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_s"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_w"
+            android:text="X"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_y"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/letter_s"
+            android:layout_marginRight="15dp"
+            android:layout_toRightOf="@id/letter_x"
+            android:text="Y"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_z"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_s"
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/letter_y"
+            android:text="Z"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/letter_space"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@id/letter_s"
+            android:layout_toRightOf="@id/letter_z"
+            android:text="_"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="50sp"
+            android:typeface="monospace" />
+
+        <EditText
+            android:id="@+id/keyboard_edittext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/letter_a"
+            android:layout_alignRight="@id/letter_space"
+            android:layout_below="@id/letter_s"
+            android:layout_marginTop="30dip"
+            android:clickable="false"
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="textAutoComplete" >
+
+            <requestFocus />
+        </EditText>
+
+    </RelativeLayout>
+
+</RelativeLayout>
