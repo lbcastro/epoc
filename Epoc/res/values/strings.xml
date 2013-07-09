@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">EPOC</string>
+    <string name="epoc">EMOTIV\nEPOC</string>
+    <string name="chan_AF3_text">AF3</string>
+    <string name="chan_F7_text">F7</string>
+    <string name="chan_F3_text">F3</string>
+    <string name="chan_FC5_text">FC5</string>
+    <string name="chan_T7_text">T7</string>
+    <string name="chan_P7_text">P7</string>
+    <string name="chan_O1_text">O1</string>
+    <string name="chan_O2_text">O2</string>
+    <string name="chan_P8_text">P8</string>
+    <string name="chan_T8_text">T8</string>
+    <string name="chan_FC6_text">FC6</string>
+    <string name="chan_F4_text">F4</string>
+    <string name="chan_F8_text">F8</string>
+    <string name="chan_AF4_text">AF4</string>
+    <string name="title_activity_launcher">EPOC Interface</string>
+    <string name="action_recon">Reconnect</string>
+    <string name="action_jump">Navigate</string>
+    <string name="action_exit">Exit</string>
+    <string name="action_rec">Record</string>
+    <string name="concentration_left1">Relaxed</string>
+    <string name="concentration_right1">Active</string>
+    <string name="concentration_left2">Distracted</string>
+    <string name="concentration_right2">Focused</string>
+    <string name="title_activity_keyboard">Keyboard</string>
+    <string name="title_activity_oscillation">Oscillation</string>
+    <string name="title_activity_calculation">Calculation</string>
+    <string name="title_activity_configuration">Configuration</string>
+    <string name="title_activity_contacts">Contacts</string>
+    <string name="configuration_record">Train</string>
+    <string name="configuration_clear">Clear</string>
+    <string name="configuration_load">Load</string>
+    <string name="action_profiles">Profiles</string>
+
+</resources>

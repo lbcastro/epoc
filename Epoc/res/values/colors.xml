@@ -1,0 +1,11 @@
+<resources>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="clean_pondwater">#A7DBD8</color>
+    <color name="happy_baloons">#83AF9B</color>
+    <color name="party_confetti">#FC9D9A</color>
+    <color name="sugar_champagne">#F9CDAD</color>
+    <color name="rock_my_world">#547980</color>
+    <color name="strawberry_sugar">#E08E79</color>
+
+</resources>
