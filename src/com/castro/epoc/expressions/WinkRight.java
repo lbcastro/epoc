@@ -9,24 +9,39 @@ import com.castro.epoc.LDA;
 public class WinkRight extends Wink {
 
     private static LDA[] sData = new LDA[6];
+
     private static int[] sChannelsIndex = new int[4];
+
     private static double[] sAmplitudes = new double[4];
+
     private static double[] sCurrentValues = new double[4];
+
     private static double[] sInitialValues = new double[4];
+
     private static double[] sLastValues = new double[4];
+
     private static double[] sRatios = new double[4];
+
     private static boolean sRising = false;
+
     private static int sRisingTimeout = 0;
+
     private static int sRecentTimeout = 0;
+
     private static final File sFile = Files.sdCard("winkright");
+
     private static final int sRisingTimeoutMax = 3;
+
     private static final int sDominantChannel = 13;
+
     private static final int sSecondaryChannel = 11;
+
     private static final int sTertiaryChannel = 14;
+
     private static final int sOppositeChannel = 2;
+
     private static final int[] sRelevantChannels = {
-            sDominantChannel, sSecondaryChannel,
-            sTertiaryChannel, sOppositeChannel
+            sDominantChannel, sSecondaryChannel, sTertiaryChannel, sOppositeChannel
     };
 
     /**

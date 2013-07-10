@@ -8,37 +8,11 @@ import android.view.Menu;
 
 public class Battery {
 
-    private Battery() {
-    }
-
     private static int sLevel = 0;
+
     private static int sPercentage;
+
     private static boolean sUpdated = false;
-
-    public static boolean isUpdated() {
-        return sUpdated;
-    }
-
-    public static int getLevel() {
-        return sLevel;
-    }
-
-    private static int getDrawable(int level) {
-        switch (level) {
-            case 0:
-                return R.drawable.b0;
-            case 1:
-                return R.drawable.b1;
-            case 2:
-                return R.drawable.b2;
-            case 3:
-                return R.drawable.b3;
-            case 4:
-                return R.drawable.b4;
-            default:
-                return R.drawable.b0;
-        }
-    }
 
     /**
      * Finds the battery level from a specified byte value.
@@ -97,6 +71,37 @@ public class Battery {
         }
     }
 
+    public static void changeDrawable(Menu menu) {
+        if (menu == null)
+            return;
+        menu.findItem(R.id.action_battery).setIcon(getDrawable(sLevel));
+    }
+
+    private static int getDrawable(int level) {
+        switch (level) {
+            case 0:
+                return R.drawable.b0;
+            case 1:
+                return R.drawable.b1;
+            case 2:
+                return R.drawable.b2;
+            case 3:
+                return R.drawable.b3;
+            case 4:
+                return R.drawable.b4;
+            default:
+                return R.drawable.b0;
+        }
+    }
+
+    public static int getLevel() {
+        return sLevel;
+    }
+
+    public static boolean isUpdated() {
+        return sUpdated;
+    }
+
     /**
      * Changes the battery icon according to its level.
      * 
@@ -109,20 +114,16 @@ public class Battery {
         if (sPercentage >= 75 && sLevel != 4) {
             sLevel = 4;
             sUpdated = true;
-        }
-        else if (sPercentage >= 50 && sLevel != 3) {
+        } else if (sPercentage >= 50 && sLevel != 3) {
             sLevel = 3;
             sUpdated = true;
-        }
-        else if (sPercentage >= 25 && sLevel != 2) {
+        } else if (sPercentage >= 25 && sLevel != 2) {
             sLevel = 2;
             sUpdated = true;
-        }
-        else if (sPercentage >= 5 && sLevel != 1) {
+        } else if (sPercentage >= 5 && sLevel != 1) {
             sLevel = 1;
             sUpdated = true;
-        }
-        else if (sLevel != 0) {
+        } else if (sLevel != 0) {
             sLevel = 0;
             sUpdated = true;
         }
@@ -131,8 +132,6 @@ public class Battery {
         }
     }
 
-    public static void changeDrawable(Menu menu) {
-        if (menu == null) return;
-        menu.findItem(R.id.action_battery).setIcon(getDrawable(sLevel));
+    private Battery() {
     }
 }

@@ -34,21 +34,31 @@ import com.jjoe64.graphview.GraphViewSeries.GraphViewStyle;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
 public class Oscillation extends Fragment implements PropertyChangeListener {
-
     private static class Frequency {
-
         private static List<Double> sEegList;
+
         private static List<Double[]> sFourierList = new ArrayList<Double[]>();
+
         private static Complex[] sFourierResult;
+
         private static double[] sFrequencies;
+
         private static double sImaginary;
+
         private static double[] sMagnitudes = new double[FFTSIZE];
+
         private static Complex[] sMagnitudesList;
+
         private static double[] sMultiplier = new double[FFTSIZE];
+
         private static double sReal;
+
         private static double[] sSignalArray;
+
         private static DoubleFFT_1D sTransf;
+
         private static double[] sWindow;
+
         private static double[] sWindowedMagnitudes;
 
         // Converts a specified value to the decibel scale.
@@ -173,17 +183,29 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
     }
 
     private ArrayList<double[]> mAllRecordings = new ArrayList<double[]>();
+
     private double mAlpha;
+
     private GraphViewData[] mBandsData = new GraphViewData[BANDS_MAX];
+
     private final File mBandsFile = Files.sdCard("bands");
+
     private GraphViewSeries mBandsSeries;
+
     private double[] mBandsValues;
+
     private double mBeta;
+
     private double[] mCorrectedBuffer = new double[CHANNELS];
+
     private double mDelta;
+
     private View mFragmentView;
+
     private GraphView mGraphView;
+
     private boolean mRecording = false;
+
     private double mTheta;
 
     public Oscillation() {
@@ -206,12 +228,10 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
     }
 
     private void buildGraphic() {
-        final LinearLayout graph = (LinearLayout) mFragmentView
-                .findViewById(R.id.oscillation_graph);
+        final LinearLayout graph = (LinearLayout)mFragmentView.findViewById(R.id.oscillation_graph);
         mGraphView = new BarGraphView(getActivity(), "");
         graph.addView(mGraphView);
         graph.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if (mRecording)
@@ -232,9 +252,8 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
     public void initData() {
         if (mGraphView == null)
             return;
-        mBandsSeries =
-                new GraphViewSeries("bands", new GraphViewStyle(Color.rgb(105, 210, 231), 5),
-                        mBandsData);
+        mBandsSeries = new GraphViewSeries("bands",
+                new GraphViewStyle(Color.rgb(105, 210, 231), 5), mBandsData);
         for (int x = 0; x < BANDS_MAX; x++) {
             mBandsData[x] = new GraphViewData(x, 0.0);
         }
@@ -253,15 +272,13 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
     @Override
     public void onPause() {
         super.onPause();
-        Connection.getInstance().removeChangeListener(this);
+        Connection.getInstance().setDataListener(this, false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (Connection.getInstance().getConnection()) {
-            Connection.getInstance().addChangeListener(this);
-        }
+        Connection.getInstance().setDataListener(this, true);
     }
 
     @Override
@@ -272,13 +289,13 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
     @Override
     public void onStop() {
         super.onStop();
-        Connection.getInstance().removeChangeListener(this);
+        Connection.getInstance().setDataListener(this, false);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
         if (event.getPropertyName() == "levels") {
-            mCorrectedBuffer = (double[]) event.getNewValue();
+            mCorrectedBuffer = (double[])event.getNewValue();
             work(mCorrectedBuffer);
         }
     }
@@ -319,7 +336,7 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
     public void work(double[] values) {
         addList(values);
         if (getListSize() % 64 == 0) {
-            ((ProgressBar) mFragmentView.findViewById(R.id.oscillation_refresh))
+            ((ProgressBar)mFragmentView.findViewById(R.id.oscillation_refresh))
                     .setProgress(getListSize() / 64);
         }
         if (getListSize() >= FFTSIZE) {
@@ -337,14 +354,11 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
                 mBandsData[x] = new GraphViewData(x, mBandsValues[x]);
                 if (x < 4) {
                     mDelta += mBandsValues[x];
-                }
-                else if (x < 8) {
+                } else if (x < 8) {
                     mTheta += mBandsValues[x];
-                }
-                else if (x < 13) {
+                } else if (x < 13) {
                     mAlpha += mBandsValues[x];
-                }
-                else if (x < 30) {
+                } else if (x < 30) {
                     mBeta += mBandsValues[x];
                 }
             }
@@ -352,14 +366,14 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
             mTheta /= 4;
             mAlpha /= 5;
             mBeta /= 17;
-            ((ProgressBar) mFragmentView.findViewById(R.id.oscillation_progress_1))
-                    .setProgress((int) mDelta);
-            ((ProgressBar) mFragmentView.findViewById(R.id.oscillation_progress_2))
-                    .setProgress((int) mTheta);
-            ((ProgressBar) mFragmentView.findViewById(R.id.oscillation_progress_3))
-                    .setProgress((int) mAlpha);
-            ((ProgressBar) mFragmentView.findViewById(R.id.oscillation_progress_4))
-                    .setProgress((int) mBeta);
+            ((ProgressBar)mFragmentView.findViewById(R.id.oscillation_progress_1))
+                    .setProgress((int)mDelta);
+            ((ProgressBar)mFragmentView.findViewById(R.id.oscillation_progress_2))
+                    .setProgress((int)mTheta);
+            ((ProgressBar)mFragmentView.findViewById(R.id.oscillation_progress_3))
+                    .setProgress((int)mAlpha);
+            ((ProgressBar)mFragmentView.findViewById(R.id.oscillation_progress_4))
+                    .setProgress((int)mBeta);
             mBandsSeries.resetData(mBandsData);
             mGraphView.setManualYAxisBounds(max * 1.1, min * 0.9);
             record(mBandsValues);

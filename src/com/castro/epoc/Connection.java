@@ -1,8 +1,9 @@
+
 package com.castro.epoc;
 
 import static com.castro.epoc.Global.CHANNELS;
-import static com.castro.epoc.Global.SAMPLING;
 import static com.castro.epoc.Global.PACKET_SIZE;
+import static com.castro.epoc.Global.SAMPLING;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -44,22 +45,41 @@ public class Connection {
 
     // Initiates needed objects.
     private HashMap<String, UsbDevice> mDevicesList;
+
     private UsbDeviceConnection mDeviceConnection;
+
     private UsbInterface mInterface;
+
     private UsbEndpoint mEndpoint;
+
     private String mSerialNumber;
+
     private Handler mHandler = new Handler();
+
     private byte[] mBuffer = new byte[PACKET_SIZE];
+
     private byte[] mDecryptedBuffer;
+
     private double[] mCorrectedBuffer = new double[CHANNELS];
+
     private int[] mLevels;
+
     private int[] mGyro = new int[2];
+
     private boolean mConnected = false;
+
     private int mCounter = 0;
+
     private int mLossCounter = 0;
+
     private double mLossValue;
-    private List<PropertyChangeListener> mListenerArray = new ArrayList<PropertyChangeListener>();
+
+    private List<PropertyChangeListener> mDataListener = new ArrayList<PropertyChangeListener>();
+
+    private List<PropertyChangeListener> mGyroListener = new ArrayList<PropertyChangeListener>();
+
     private PropertyChangeListener mMainListener;
+
     private Runnable mUpdateDataRunnable = new Runnable() {
         @Override
         public void run() {
@@ -68,12 +88,6 @@ public class Connection {
     };
 
     protected Connection() {
-    }
-
-    public void addChangeListener(PropertyChangeListener newListener) {
-        if (!mListenerArray.contains(newListener)) {
-            mListenerArray.add(newListener);
-        }
     }
 
     public void closeConnection() {
@@ -172,19 +186,16 @@ public class Connection {
         mEndpoint = mInterface.getEndpoint(0);
         // Check if the headset is on.
         byte[] buffer = new byte[32];
-        double detection = mDeviceConnection.bulkTransfer(mEndpoint, buffer,
-                PACKET_SIZE, 1000);
+        double detection = mDeviceConnection.bulkTransfer(mEndpoint, buffer, PACKET_SIZE, 1000);
         if (detection == -1.0)
             return false;
         // At this point, connection has been established.
         mConnected = true;
         ActionBarManager.setState("Online");
-        for (PropertyChangeListener listener : mListenerArray) {
-            listener.propertyChange(new PropertyChangeEvent(this, "connection",
-                    0, mConnected));
+        for (PropertyChangeListener listener : mDataListener) {
+            listener.propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
         }
-        mMainListener.propertyChange(new PropertyChangeEvent(this,
-                "connection", 0, mConnected));
+        mMainListener.propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
         Crypt.getInstance().initCipher(mSerialNumber);
         // TODO: Random data management.
         mHandler.removeCallbacks(mUpdateDataRunnable);
@@ -241,63 +252,79 @@ public class Connection {
         return mDecryptedBuffer;
     }
 
-    public void removeChangeListener(PropertyChangeListener oldListener) {
-        if (mListenerArray.contains(oldListener)) {
-            mListenerArray.remove(oldListener);
+    public void setDataListener(PropertyChangeListener listener, boolean b) {
+        if (b) {
+            if (!getConnection()) {
+                return;
+            }
+            if (!mDataListener.contains(listener)) {
+                mDataListener.add(listener);
+            }
+        } else if (mDataListener.contains(listener)) {
+            mDataListener.remove(listener);
         }
     }
 
-    public void setBuffer(byte[] b) {
-        mBuffer = b;
+    public void setGyroListener(PropertyChangeListener listener, boolean b) {
+        if (b) {
+            if (!mGyroListener.contains(listener)) {
+                mGyroListener.add(listener);
+            }
+        } else if (mGyroListener.contains(listener)) {
+            mGyroListener.remove(listener);
+        }
     }
 
     public void setMainListener(PropertyChangeListener newListener) {
         mMainListener = newListener;
     }
 
+    // Method to retrieve, process and deliver data to other classes.
     private void updateData() {
         mHandler.postDelayed(mUpdateDataRunnable, SAMPLING);
+        // Stops if connection is not established or failed.
         if (mDeviceConnection == null) {
             mConnected = false;
-            mMainListener.propertyChange(new PropertyChangeEvent(this,
-                    "connection", 0, mConnected));
+            mMainListener
+                    .propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
             return;
         }
-        if (mDeviceConnection.bulkTransfer(mEndpoint, mBuffer, PACKET_SIZE,
-                10000) < 0) {
+        // Stops when there is an error retrieving data.
+        if (mDeviceConnection.bulkTransfer(mEndpoint, mBuffer, PACKET_SIZE, 10000) < 0) {
             if (mDeviceConnection != null) {
                 mDeviceConnection.close();
                 mDeviceConnection = null;
             }
             if (mConnected) {
                 mConnected = false;
-                for (PropertyChangeListener listener : mListenerArray) {
-                    listener.propertyChange(new PropertyChangeEvent(this,
-                            "connection", 0, mConnected));
+                for (PropertyChangeListener listener : mDataListener) {
+                    listener.propertyChange(new PropertyChangeEvent(this, "connection", 0,
+                            mConnected));
                 }
             }
             return;
         }
+        // Stops if no data was retrieved.
         if (mBuffer == null) {
             return;
         }
         mBuffer = processData(mBuffer);
-        mGyro[0] = mBuffer[29];
-        mGyro[1] = mBuffer[30];
         mLevels = Crypt.getInstance().getLevels(mBuffer);
         for (Channels c : Channels.values()) {
             c.setAverage(mLevels[c.ordinal()]);
             mCorrectedBuffer[c.ordinal()] = Math
                     .round((mLevels[c.ordinal()] - c.getAverage()) * 100.0) / 100.0;
         }
-        for (PropertyChangeListener listener : mListenerArray) {
-            // TODO: Discriminate data to different classes.
-            listener.propertyChange(new PropertyChangeEvent(this, "levels", 0,
-                    mCorrectedBuffer));
-            listener.propertyChange(new PropertyChangeEvent(this, "buffer",
-                    mCounter, mBuffer));
-            listener.propertyChange(new PropertyChangeEvent(this, "gyro", 0,
-                    mGyro));
+        for (PropertyChangeListener listener : mDataListener) {
+            listener.propertyChange(new PropertyChangeEvent(this, "levels", 0, mCorrectedBuffer));
+            listener.propertyChange(new PropertyChangeEvent(this, "buffer", mCounter, mBuffer));
+        }
+        if (mGyroListener != null) {
+            mGyro[0] = mBuffer[29];
+            mGyro[1] = mBuffer[30];
+            for (PropertyChangeListener listener : mGyroListener) {
+                listener.propertyChange(new PropertyChangeEvent(this, "gyro", 0, mGyro));
+            }
         }
     }
 }

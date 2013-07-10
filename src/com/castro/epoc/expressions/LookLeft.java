@@ -9,18 +9,31 @@ import com.castro.epoc.LDA;
 public class LookLeft extends Look {
 
     private static LDA sData;
+
     private static double[] sCurrentValues = new double[2];
+
     private static double[] sLastValues = new double[2];
+
     private static double[] sInitialValues = new double[2];
+
     private static double[] sAmplitudes = new double[2];
+
     private static int[] sChannelsIndex = new int[2];
+
     private static boolean sRising = false;
+
     private static int sRisingTimeout = 0;
+
     private static int sRecentTimeout = 0;
+
     private static final File sFile = Files.sdCard("lookleft");
+
     private static final int sRisingTimeoutMax = 3;
+
     private static final int sDominantChannel = 2;
+
     private static final int sOppositeChannel = 13;
+
     private static final int[] sRelevantChannels = {
             sDominantChannel, sOppositeChannel
     };

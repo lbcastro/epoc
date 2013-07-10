@@ -38,9 +38,28 @@ import Jama.Matrix;
 
 public class LDA {
 
+    /**
+     * Returns the mean of the given values. On error or empty data returns 0.
+     * 
+     * @param values The values.
+     * @return The mean.
+     * @since 1.5
+     */
+    public static double getMean(final double[] values) {
+        if (values == null || values.length == 0)
+            return Double.NaN;
+        double mean = 0.0d;
+        for (int index = 0; index < values.length; index++)
+            mean += values[index];
+        return mean / (double)values.length;
+    }
+
     private double[][] groupMean;
+
     private double[][] pooledInverseCovariance;
+
     private double[] probability;
+
     private ArrayList<Integer> groupList = new ArrayList<Integer>();
 
     /**
@@ -123,9 +142,8 @@ public class LDA {
         for (int j = 0; j < pooledInverseCovariance.length; j++) {
             for (int k = 0; k < pooledInverseCovariance[j].length; k++) {
                 for (int l = 0; l < subset.length; l++) {
-                    pooledInverseCovariance[j][k] +=
-                            ((double) subset[l].size() / (double) data.length)
-                                    * covariance[l][j][k];
+                    pooledInverseCovariance[j][k] += ((double)subset[l].size() / (double)data.length)
+                            * covariance[l][j][k];
                 }
             }
         }
@@ -137,28 +155,11 @@ public class LDA {
             for (int i = 0; i < groupList.size(); i++) {
                 this.probability[i] = prob;
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < subset.length; i++) {
-                this.probability[i] = (double) subset[i].size() / (double) data.length;
+                this.probability[i] = (double)subset[i].size() / (double)data.length;
             }
         }
-    }
-
-    private double getGroupMean(int column, ArrayList<double[]> data) {
-        double[] d = new double[data.size()];
-        for (int i = 0; i < data.size(); i++) {
-            d[i] = data.get(i)[column];
-        }
-        return getMean(d);
-    }
-
-    private double getGlobalMean(int column, double data[][]) {
-        double[] d = new double[data.length];
-        for (int i = 0; i < data.length; i++) {
-            d[i] = data[i][column];
-        }
-        return getMean(d);
     }
 
     /**
@@ -171,12 +172,35 @@ public class LDA {
         double[] function = new double[groupList.size()];
         for (int i = 0; i < groupList.size(); i++) {
             double[] tmp = matrixMultiplication(groupMean[i], pooledInverseCovariance);
-            function[i] =
-                    (matrixMultiplication(tmp, values))
-                            - (.5d * matrixMultiplication(tmp, groupMean[i]))
-                            + Math.log(probability[i]);
+            function[i] = (matrixMultiplication(tmp, values))
+                    - (.5d * matrixMultiplication(tmp, groupMean[i])) + Math.log(probability[i]);
         }
         return function;
+    }
+
+    /**
+     * Returns the weight for the linear fisher's discrimination functions
+     * 
+     * @return the weights
+     */
+    public double[] getFisherWeights() {
+        return new double[] {};
+    }
+
+    private double getGlobalMean(int column, double data[][]) {
+        double[] d = new double[data.length];
+        for (int i = 0; i < data.length; i++) {
+            d[i] = data[i][column];
+        }
+        return getMean(d);
+    }
+
+    private double getGroupMean(int column, ArrayList<double[]> data) {
+        double[] d = new double[data.size()];
+        for (int i = 0; i < data.size(); i++) {
+            d[i] = data.get(i)[column];
+        }
+        return getMean(d);
     }
 
     /**
@@ -192,31 +216,10 @@ public class LDA {
             double[] dist = new double[groupMean[i].length];
             for (int j = 0; j < dist.length; j++)
                 dist[j] = values[j] - groupMean[i][j];
-            function[i] =
-                    matrixMultiplication(matrixMultiplication(dist, this.pooledInverseCovariance),
-                            dist);
+            function[i] = matrixMultiplication(
+                    matrixMultiplication(dist, this.pooledInverseCovariance), dist);
         }
         return function;
-    }
-
-    /**
-     * Predict the membership of an object to one of the different groups based
-     * on Mahalanobis distance
-     * 
-     * @param values
-     * @return the group
-     */
-    public int predictM(double[] values) {
-        int group = -1;
-        double max = Double.NEGATIVE_INFINITY;
-        double[] discr = this.getMahalanobisDistance(values);
-        for (int i = 0; i < discr.length; i++) {
-            if (discr[i] > max) {
-                max = discr[i];
-                group = groupList.get(i);
-            }
-        }
-        return group;
     }
 
     /**
@@ -230,31 +233,40 @@ public class LDA {
     }
 
     /**
-     * Returns the weight for the linear fisher's discrimination functions
+     * Multiplies two matrices and returns the result as a double (the second
+     * matrix is transposed automatically). Please note, that the number of rows
+     * in matrix a must be equal to the number of columns in matrix b
      * 
-     * @return the weights
+     * @param a the first matrix
+     * @param b the second matrix
+     * @return the resulting matrix
      */
-    public double[] getFisherWeights() {
-        return new double[] {};
+    private double matrixMultiplication(double[] matrixA, double[] matrixB) {
+        double c = 0d;
+        for (int i = 0; i < matrixA.length; i++) {
+            c += matrixA[i] * matrixB[i];
+        }
+        return c;
     }
 
     /**
-     * Predict the membership of an object to one of the different groups.
+     * Multiplies two matrices and returns the result as a double[]-array.
+     * Please not, that the number of rows in matrix a must be equal to the
+     * number of columns in matrix b
      * 
-     * @param values
-     * @return the group
+     * @param a the first matrix
+     * @param b the second matrix
+     * @return the resulting matrix
      */
-    public int predict(double[] values) {
-        int group = -1;
-        double max = Double.NEGATIVE_INFINITY;
-        double[] discr = this.getDiscriminantFunctionValues(values);
-        for (int i = 0; i < discr.length; i++) {
-            if (discr[i] > max) {
-                max = discr[i];
-                group = groupList.get(i);
+    private double[] matrixMultiplication(double[] matrixA, double[][] matrixB) {
+        double c[] = new double[matrixA.length];
+        for (int i = 0; i < matrixA.length; i++) {
+            c[i] = 0;
+            for (int j = 0; j < matrixB[i].length; j++) {
+                c[i] += matrixA[i] * matrixB[i][j];
             }
         }
-        return group;
+        return c;
     }
 
     /**
@@ -284,57 +296,42 @@ public class LDA {
     }
 
     /**
-     * Multiplies two matrices and returns the result as a double[]-array.
-     * Please not, that the number of rows in matrix a must be equal to the
-     * number of columns in matrix b
+     * Predict the membership of an object to one of the different groups.
      * 
-     * @param a the first matrix
-     * @param b the second matrix
-     * @return the resulting matrix
+     * @param values
+     * @return the group
      */
-    private double[] matrixMultiplication(double[] matrixA, double[][] matrixB) {
-        double c[] = new double[matrixA.length];
-        for (int i = 0; i < matrixA.length; i++) {
-            c[i] = 0;
-            for (int j = 0; j < matrixB[i].length; j++) {
-                c[i] += matrixA[i] * matrixB[i][j];
+    public int predict(double[] values) {
+        int group = -1;
+        double max = Double.NEGATIVE_INFINITY;
+        double[] discr = this.getDiscriminantFunctionValues(values);
+        for (int i = 0; i < discr.length; i++) {
+            if (discr[i] > max) {
+                max = discr[i];
+                group = groupList.get(i);
             }
         }
-        return c;
+        return group;
     }
 
     /**
-     * Multiplies two matrices and returns the result as a double (the second
-     * matrix is transposed automatically). Please note, that the number of rows
-     * in matrix a must be equal to the number of columns in matrix b
+     * Predict the membership of an object to one of the different groups based
+     * on Mahalanobis distance
      * 
-     * @param a the first matrix
-     * @param b the second matrix
-     * @return the resulting matrix
+     * @param values
+     * @return the group
      */
-    private double matrixMultiplication(double[] matrixA, double[] matrixB) {
-        double c = 0d;
-        for (int i = 0; i < matrixA.length; i++) {
-            c += matrixA[i] * matrixB[i];
-        }
-        return c;
-    }
-
-    /**
-     * Transposes a matrix
-     * 
-     * @param matrix the matrix to transpose
-     * @return the transposed matrix
-     */
-    @SuppressWarnings("unused")
-    private double[][] transpose(final double[][] matrix) {
-        double[][] trans = new double[matrix[0].length][matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                trans[j][i] = matrix[i][j];
+    public int predictM(double[] values) {
+        int group = -1;
+        double max = Double.NEGATIVE_INFINITY;
+        double[] discr = this.getMahalanobisDistance(values);
+        for (int i = 0; i < discr.length; i++) {
+            if (discr[i] > max) {
+                max = discr[i];
+                group = groupList.get(i);
             }
         }
-        return trans;
+        return group;
     }
 
     /**
@@ -353,18 +350,19 @@ public class LDA {
     }
 
     /**
-     * Returns the mean of the given values. On error or empty data returns 0.
+     * Transposes a matrix
      * 
-     * @param values The values.
-     * @return The mean.
-     * @since 1.5
+     * @param matrix the matrix to transpose
+     * @return the transposed matrix
      */
-    public static double getMean(final double[] values) {
-        if (values == null || values.length == 0)
-            return Double.NaN;
-        double mean = 0.0d;
-        for (int index = 0; index < values.length; index++)
-            mean += values[index];
-        return mean / (double) values.length;
+    @SuppressWarnings("unused")
+    private double[][] transpose(final double[][] matrix) {
+        double[][] trans = new double[matrix[0].length][matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                trans[j][i] = matrix[i][j];
+            }
+        }
+        return trans;
     }
 }

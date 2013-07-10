@@ -20,24 +20,40 @@ import com.castro.epoc.expressions.WinkLeft;
 import com.castro.epoc.expressions.WinkRight;
 
 public class Keyboard extends Fragment implements PropertyChangeListener {
-
     private View mFragmentView;
+
     private TextView[] mTextViewArray = new TextView[27];
+
     private int mCurrentRow;
+
     private int mTotalRows;
+
     private int mTotalColumns;
+
     private int[] mRowNumber;
+
     private int[] mColumnNumber;
+
     private int mCurrentColumn;
+
     private boolean mColumnSelected = false;
+
     private boolean mRowSelected = false;
+
     private int mKeySelected;
+
     private int mColorRegular = Color.WHITE;
+
     private int mColorTemporary = Color.rgb(69, 173, 168);
+
     private int mColorSelected = Color.rgb(241, 212, 175);
+
     private int mColorFinal = Color.rgb(224, 142, 121);
+
     private boolean mStarted = false;
+
     private boolean mDeleteLast = false;
+
     private double[] mCorrectedBuffer = new double[CHANNELS];
 
     public Keyboard() {
@@ -65,8 +81,7 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
     // previous row. Also stores the index of the current row.
     private void changeRow(int row, int color) {
         for (int x = 0; x < mTotalColumns; x++) {
-            mTextViewArray[x + (mCurrentRow * mTotalColumns)]
-                    .setTextColor(color);
+            mTextViewArray[x + (mCurrentRow * mTotalColumns)].setTextColor(color);
             mRowNumber[x] = x + (mCurrentRow * mTotalColumns);
         }
     }
@@ -78,8 +93,7 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
             mCurrentColumn = 0;
         }
         changeColumn(mCurrentColumn, mColorTemporary);
-        changeColumn((mCurrentColumn == 0 ? mTotalColumns - 1
-                : mCurrentColumn - 1), mColorRegular);
+        changeColumn((mCurrentColumn == 0 ? mTotalColumns - 1 : mCurrentColumn - 1), mColorRegular);
     }
 
     // Hovers the next row.
@@ -89,19 +103,15 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
             mCurrentRow = 0;
         }
         changeRow(mCurrentRow, mColorTemporary);
-        changeRow((mCurrentRow == 0 ? mTotalRows - 1 : mCurrentRow - 1),
-                mColorRegular);
+        changeRow((mCurrentRow == 0 ? mTotalRows - 1 : mCurrentRow - 1), mColorRegular);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        mFragmentView = inflater.inflate(R.layout.activity_keyboard, container,
-                false);
-        RelativeLayout layout = (RelativeLayout) mFragmentView
-                .findViewById(R.id.keyboard_relative2);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mFragmentView = inflater.inflate(R.layout.activity_keyboard, container, false);
+        RelativeLayout layout = (RelativeLayout)mFragmentView.findViewById(R.id.keyboard_relative2);
         for (int x = 0; x < 27; x++) {
-            mTextViewArray[x] = (TextView) layout.getChildAt(x);
+            mTextViewArray[x] = (TextView)layout.getChildAt(x);
         }
         return mFragmentView;
     }
@@ -109,33 +119,33 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
     @Override
     public void onPause() {
         super.onPause();
-        Connection.getInstance().removeChangeListener(this);
+        Connection.getInstance().setDataListener(this, false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (Connection.getInstance().getConnection()) {
-            Connection.getInstance().addChangeListener(this);
-        }
+        Connection.getInstance().setDataListener(this, true);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Connection.getInstance().removeChangeListener(this);
+        Connection.getInstance().setDataListener(this, false);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
         if (event.getPropertyName() == "levels") {
-            mCorrectedBuffer = (double[]) event.getNewValue();
+            mCorrectedBuffer = (double[])event.getNewValue();
             if (WinkLeft.detect(mCorrectedBuffer)) {
                 selectCurrent();
             }
             if (WinkRight.detect(mCorrectedBuffer)) {
                 selectNext();
             }
+        } else {
+            return;
         }
     }
 
@@ -184,8 +194,7 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
     // Types the currently selected character into the activity text box. If
     // deletion is activated, deletes the last typed character.
     private void typeSelection() {
-        EditText mEditText = (EditText) mFragmentView
-                .findViewById(R.id.keyboard_edittext);
+        EditText mEditText = (EditText)mFragmentView.findViewById(R.id.keyboard_edittext);
         if (mDeleteLast) {
             String string = mEditText.getText().toString();
             if (string.length() > 0) {

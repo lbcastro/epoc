@@ -9,15 +9,17 @@ import com.castro.epoc.expressions.WinkLeft;
 import com.castro.epoc.expressions.WinkRight;
 
 public enum Events {
-    BASELINE(),
-    WINKLEFT(WinkLeft.getFile(), WinkLeft.getTimeout(), WinkLeft.getRelevant()),
-    WINKRIGHT(WinkRight.getFile(), WinkRight.getTimeout(), WinkRight.getRelevant()),
-    LOOKLEFT(LookLeft.getFile(), LookLeft.getTimeout(), LookLeft.getRelevant()),
-    LOOKRIGHT(LookRight.getFile(), LookRight.getTimeout(), LookRight.getRelevant());
+    BASELINE(), WINKLEFT(WinkLeft.getFile(), WinkLeft.getTimeout(), WinkLeft.getRelevant()), WINKRIGHT(
+            WinkRight.getFile(), WinkRight.getTimeout(), WinkRight.getRelevant()), LOOKLEFT(
+            LookLeft.getFile(), LookLeft.getTimeout(), LookLeft.getRelevant()), LOOKRIGHT(LookRight
+            .getFile(), LookRight.getTimeout(), LookRight.getRelevant());
 
     public File file;
+
     int timeout;
+
     public LDA data;
+
     int[] relevant;
 
     // Baseline case

@@ -105,27 +105,31 @@ import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewStyle;
 
 public enum Channels {
-    AF3(AF3_BITS, AF3_AV, AF3_SERIES, AF3_COLOR, AF3_ACTIVE, AF3_QUAL, AF3_DATA),
-    F7(F7_BITS, F7_AV, F7_SERIES, F7_COLOR, F7_ACTIVE, F7_QUAL, F7_DATA),
-    F3(F3_BITS, F3_AV, F3_SERIES, F3_COLOR, F3_ACTIVE, F3_QUAL, F3_DATA),
-    FC5(FC5_BITS, FC5_AV, FC5_SERIES, FC5_COLOR, FC5_ACTIVE, FC5_QUAL, FC5_DATA),
-    T7(T7_BITS, T7_AV, T7_SERIES, T7_COLOR, T7_ACTIVE, T7_QUAL, T7_DATA),
-    P7(P7_BITS, T7_AV, P7_SERIES, P7_COLOR, P7_ACTIVE, P7_QUAL, P7_DATA),
-    O1(O1_BITS, O1_AV, O1_SERIES, O1_COLOR, O1_ACTIVE, O1_QUAL, O1_DATA),
-    O2(O2_BITS, O2_AV, O2_SERIES, O2_COLOR, O2_ACTIVE, O2_QUAL, O2_DATA),
-    P8(P8_BITS, P8_AV, P8_SERIES, P8_COLOR, P8_ACTIVE, P8_QUAL, P8_DATA),
-    T8(T8_BITS, T8_AV, T8_SERIES, T8_COLOR, T8_ACTIVE, T8_QUAL, T8_DATA),
-    FC6(FC6_BITS, FC6_AV, FC6_SERIES, FC6_COLOR, FC6_ACTIVE, FC6_QUAL, FC6_DATA),
-    F4(F4_BITS, F4_AV, F4_SERIES, F4_COLOR, F4_ACTIVE, F4_QUAL, F4_DATA),
-    F8(F8_BITS, F8_AV, F8_SERIES, F8_COLOR, F8_ACTIVE, F8_QUAL, F8_DATA),
-    AF4(AF4_BITS, AF4_AV, AF4_SERIES, AF4_COLOR, AF4_ACTIVE, AF4_QUAL, AF4_DATA);
+    AF3(AF3_BITS, AF3_AV, AF3_SERIES, AF3_COLOR, AF3_ACTIVE, AF3_QUAL, AF3_DATA), F7(F7_BITS,
+            F7_AV, F7_SERIES, F7_COLOR, F7_ACTIVE, F7_QUAL, F7_DATA), F3(F3_BITS, F3_AV, F3_SERIES,
+            F3_COLOR, F3_ACTIVE, F3_QUAL, F3_DATA), FC5(FC5_BITS, FC5_AV, FC5_SERIES, FC5_COLOR,
+            FC5_ACTIVE, FC5_QUAL, FC5_DATA), T7(T7_BITS, T7_AV, T7_SERIES, T7_COLOR, T7_ACTIVE,
+            T7_QUAL, T7_DATA), P7(P7_BITS, T7_AV, P7_SERIES, P7_COLOR, P7_ACTIVE, P7_QUAL, P7_DATA), O1(
+            O1_BITS, O1_AV, O1_SERIES, O1_COLOR, O1_ACTIVE, O1_QUAL, O1_DATA), O2(O2_BITS, O2_AV,
+            O2_SERIES, O2_COLOR, O2_ACTIVE, O2_QUAL, O2_DATA), P8(P8_BITS, P8_AV, P8_SERIES,
+            P8_COLOR, P8_ACTIVE, P8_QUAL, P8_DATA), T8(T8_BITS, T8_AV, T8_SERIES, T8_COLOR,
+            T8_ACTIVE, T8_QUAL, T8_DATA), FC6(FC6_BITS, FC6_AV, FC6_SERIES, FC6_COLOR, FC6_ACTIVE,
+            FC6_QUAL, FC6_DATA), F4(F4_BITS, F4_AV, F4_SERIES, F4_COLOR, F4_ACTIVE, F4_QUAL,
+            F4_DATA), F8(F8_BITS, F8_AV, F8_SERIES, F8_COLOR, F8_ACTIVE, F8_QUAL, F8_DATA), AF4(
+            AF4_BITS, AF4_AV, AF4_SERIES, AF4_COLOR, AF4_ACTIVE, AF4_QUAL, AF4_DATA);
 
     private final int[] mBits;
+
     private double mAverage;
+
     private GraphViewSeries mSeries;
+
     private final GraphViewStyle mStyle;
+
     private boolean mActive;
+
     private int mQuality;
+
     private GraphViewData[] mData;
 
     Channels(int[] bits, double average, GraphViewSeries series, GraphViewStyle color,
@@ -139,51 +143,51 @@ public enum Channels {
         this.mData = data;
     }
 
-    public void setSeries(GraphViewSeries s) {
-        mSeries = s;
-    }
-
-    public void setAverage(double a) {
-        mAverage = ((mAverage * (FILTER - 1)) + a) / FILTER;
+    public boolean getActive() {
+        return this.mActive;
     }
 
     public double getAverage() {
         return this.mAverage;
     }
 
-    public void setActive(boolean b) {
-        mActive = b;
-    }
-
-    public void setQuality(int c) {
-        mQuality = c;
-    }
-
-    public int getQuality() {
-        return this.mQuality;
+    public int[] getBits() {
+        return this.mBits;
     }
 
     public GraphViewData[] getData() {
         return this.mData;
     }
 
-    public void setData(GraphViewData[] d) {
-        this.mData = d;
+    public int getQuality() {
+        return this.mQuality;
     }
 
     public GraphViewSeries getSeries() {
         return this.mSeries;
     }
 
-    public boolean getActive() {
-        return this.mActive;
-    }
-
     public GraphViewStyle getStyle() {
         return this.mStyle;
     }
 
-    public int[] getBits() {
-        return this.mBits;
+    public void setActive(boolean b) {
+        mActive = b;
+    }
+
+    public void setAverage(double a) {
+        mAverage = ((mAverage * (FILTER - 1)) + a) / FILTER;
+    }
+
+    public void setData(GraphViewData[] d) {
+        this.mData = d;
+    }
+
+    public void setQuality(int c) {
+        mQuality = c;
+    }
+
+    public void setSeries(GraphViewSeries s) {
+        mSeries = s;
     }
 }

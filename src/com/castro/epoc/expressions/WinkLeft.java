@@ -9,37 +9,40 @@ import com.castro.epoc.LDA;
 public class WinkLeft extends Wink {
 
     private static LDA[] sData = new LDA[6];
+
     private static int[] sChannelsIndex = new int[4];
+
     private static double[] sAmplitudes = new double[4];
+
     private static double[] sCurrentValues = new double[4];
+
     private static double[] sInitialValues = new double[4];
+
     private static double[] sLastValues = new double[4];
+
     private static double[] sRatios = new double[4];
+
     private static boolean sRising = false;
+
     private static int sRisingTimeout = 0;
+
     private static int sRecentTimeout = 0;
+
     private static final File sFile = Files.sdCard("winkleft");
+
     private static final int sRisingTimeoutMax = 3;
+
     private static final int sDominantChannel = 2;
+
     private static final int sSecondaryChannel = 1;
+
     private static final int sTertiaryChannel = 4;
+
     private static final int sOppositeChannel = 13;
+
     private static final int[] sRelevantChannels = {
-            sDominantChannel, sSecondaryChannel,
-            sTertiaryChannel, sOppositeChannel
+            sDominantChannel, sSecondaryChannel, sTertiaryChannel, sOppositeChannel
     };
-
-    public static File getFile() {
-        return sFile;
-    }
-
-    public static int[] getRelevant() {
-        return sRelevantChannels;
-    }
-
-    public static int getTimeout() {
-        return sRecentTimeout;
-    }
 
     public static boolean detect(double[] values) {
         // Check for missing files, LDA data or input values.
@@ -85,6 +88,18 @@ public class WinkLeft extends Wink {
         // If the method reaches this point, detection is true.
         reset();
         return true;
+    }
+
+    public static File getFile() {
+        return sFile;
+    }
+
+    public static int[] getRelevant() {
+        return sRelevantChannels;
+    }
+
+    public static int getTimeout() {
+        return sRecentTimeout;
     }
 
     private static void initial() {
