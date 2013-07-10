@@ -10,6 +10,8 @@ public class LookLeft extends Look {
 
     private static LDA sData;
 
+    private static File sFile;
+
     private static double[] sCurrentValues = new double[2];
 
     private static double[] sLastValues = new double[2];
@@ -25,8 +27,6 @@ public class LookLeft extends Look {
     private static int sRisingTimeout = 0;
 
     private static int sRecentTimeout = 0;
-
-    private static final File sFile = Files.sdCard("lookleft");
 
     private static final int sRisingTimeoutMax = 3;
 
@@ -100,23 +100,8 @@ public class LookLeft extends Look {
 
     public static void setLda() {
         sChannelsIndex = indexes(sRelevantChannels);
+        sFile = Files.sdCard("lookleft");
         sData = train(sFile, sChannelsIndex);
     }
-    //
-    // public static void function(int i) {
-    // // if (!Calculation.isActive() && Switcher.getEyes()) {
-    // // int ii = i;
-    // // if (ii <= 0) ii = 4;
-    // // else ii -= 1;
-    // // Switcher.getViewPager().setCurrentItem(ii);
-    // // return;
-    // // }
-    // // else {
-    // switch (i) {
-    // case CALC_VIEW:
-    // // Calculation.checkSide(0);
-    // return;
-    // }
-    // // }
-    // }
+
 }

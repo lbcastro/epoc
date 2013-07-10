@@ -5,16 +5,23 @@ import java.io.File;
 
 import com.castro.epoc.Events;
 import com.castro.epoc.LDA;
+import com.castro.epoc.Profiles;
 
 public class Wink extends Expression {
 
     protected static boolean check(LDA[] data, File file, double[] values) {
-        if (data == null)
+        if (Profiles.getInstance().getActiveUser() == null) {
             return false;
-        if (values == null)
+        }
+        if (data == null) {
             return false;
-        if (!file.exists())
+        }
+        if (values == null) {
             return false;
+        }
+        if (!file.exists()) {
+            return false;
+        }
         return true;
     }
 
@@ -65,10 +72,13 @@ public class Wink extends Expression {
     }
 
     public static LDA[] train(File file, int[] index) {
+        if (Profiles.getInstance().getActiveUser() == null) {
+            return null;
+        }
         // Checks if the data files exist.
         if (!file.exists())
             return null;
-        if (!Events.BASELINE.file.exists())
+        if (!Events.BASELINE.getFile().exists())
             return null;
         // Retrieves data from the files and checks if the data exists.
         final double[][][] data = recordings(file);

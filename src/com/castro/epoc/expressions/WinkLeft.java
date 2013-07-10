@@ -28,7 +28,7 @@ public class WinkLeft extends Wink {
 
     private static int sRecentTimeout = 0;
 
-    private static final File sFile = Files.sdCard("winkleft");
+    private static File sFile;
 
     private static final int sRisingTimeoutMax = 3;
 
@@ -129,6 +129,7 @@ public class WinkLeft extends Wink {
 
     public static void setLda() {
         sChannelsIndex = indexes(sRelevantChannels);
+        sFile = Files.sdCard("winkleft");
         sData = train(sFile, sChannelsIndex);
     }
 }

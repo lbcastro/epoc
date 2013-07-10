@@ -33,23 +33,10 @@ public class Training {
     public Training(Events event) {
         mActiveEvent = event;
         ActionBarManager.setState("Recording");
-        if (!event.file.exists()) {
-            Files.createFile(event.file, "root");
+        if (!event.getFile().exists()) {
+            Files.createFile(event.getFile(), "root");
         }
     }
-
-    // private void recordBaseline() {
-    // final Document document = Files.getDoc(mActiveEvent.file);
-    // final Node root = document.getFirstChild();
-    // for (int x = 0; x < mBaselineList.size(); x++) {
-    // final Element recording = document.createElement("recording");
-    // final String string = Arrays.toString(mBaselineList.get(x))
-    // .replaceAll("\\[|\\]", "");
-    // root.appendChild(recording);
-    // recording.setTextContent(string);
-    // }
-    // Files.saveChanges(document, mActiveEvent.file);
-    // }
 
     public void addValues(double[] values) {
         if (mActiveEvent == Events.BASELINE) {
@@ -66,7 +53,7 @@ public class Training {
                 mBaselineCounter = 0;
                 mBaselineAverage = new double[CHANNELS];
             }
-        } else if (values[mActiveEvent.relevant[0] - 1] > mTopValue[mActiveEvent.relevant[0] - 1]) {
+        } else if (values[mActiveEvent.getRelevant()[0] - 1] > mTopValue[mActiveEvent.getRelevant()[0] - 1]) {
             for (int x = 0; x < CHANNELS; x++) {
                 mTopValue[x] = values[x];
             }
@@ -74,20 +61,18 @@ public class Training {
     }
 
     private void recordEvent() {
-        final Document document = Files.getDoc(mActiveEvent.file);
+        final Document document = Files.getDoc(mActiveEvent.getFile());
         final Node root = document.getFirstChild();
         final Element recording = document.createElement("recording");
-        final String string = Arrays.toString(mTopValue);
+        final String string = Arrays.toString(mTopValue).replaceAll("\\[|\\]", "");
         root.appendChild(recording);
         recording.setTextContent(string);
-        // TODO: IMPLEMENT MAX & MIN (?)
-        Files.saveChanges(document, mActiveEvent.file);
+        Files.saveChanges(document, mActiveEvent.getFile());
     }
 
     public void recordValues() {
         if (mActiveEvent == Events.BASELINE) {
-            Files.addValues(mActiveEvent.file, mBaselineList);
-            // recordBaseline();
+            Files.addValues(mActiveEvent.getFile(), mBaselineList);
         } else {
             recordEvent();
             mActiveEvent.setLda();

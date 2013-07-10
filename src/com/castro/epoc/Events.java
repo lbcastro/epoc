@@ -9,58 +9,85 @@ import com.castro.epoc.expressions.WinkLeft;
 import com.castro.epoc.expressions.WinkRight;
 
 public enum Events {
-    BASELINE(), WINKLEFT(WinkLeft.getFile(), WinkLeft.getTimeout(), WinkLeft.getRelevant()), WINKRIGHT(
-            WinkRight.getFile(), WinkRight.getTimeout(), WinkRight.getRelevant()), LOOKLEFT(
-            LookLeft.getFile(), LookLeft.getTimeout(), LookLeft.getRelevant()), LOOKRIGHT(LookRight
-            .getFile(), LookRight.getTimeout(), LookRight.getRelevant());
+    BASELINE(), WINKLEFT(), WINKRIGHT(), LOOKLEFT(), LOOKRIGHT();
 
-    public File file;
-
-    int timeout;
-
-    public LDA data;
-
-    int[] relevant;
-
-    // Baseline case
     Events() {
-        this.file = Files.sdCard("baseline");
-    }
-
-    Events(File file, int timeout, int[] relevant) {
-        this.file = file;
-        this.timeout = timeout;
-        this.relevant = relevant;
     }
 
     public boolean detect(double[] v) {
-        if (this == WINKLEFT) {
-            return WinkLeft.detect(v);
+        switch (this) {
+            case WINKLEFT:
+                return WinkLeft.detect(v);
+            case WINKRIGHT:
+                return WinkRight.detect(v);
+            case LOOKLEFT:
+                return LookLeft.detect(v);
+            case LOOKRIGHT:
+                return LookRight.detect(v);
+            default:
+                return false;
         }
-        if (this == WINKRIGHT) {
-            return WinkRight.detect(v);
+    }
+
+    public File getFile() {
+        switch (this) {
+            case BASELINE:
+                return Files.sdCard("baseline");
+            case WINKLEFT:
+                return WinkLeft.getFile();
+            case WINKRIGHT:
+                return WinkRight.getFile();
+            case LOOKLEFT:
+                return LookLeft.getFile();
+            case LOOKRIGHT:
+                return LookRight.getFile();
+            default:
+                return null;
         }
-        if (this == LOOKLEFT) {
-            return LookLeft.detect(v);
+    }
+
+    public int[] getRelevant() {
+        switch (this) {
+            case WINKLEFT:
+                return WinkLeft.getRelevant();
+            case WINKRIGHT:
+                return WinkRight.getRelevant();
+            case LOOKLEFT:
+                return LookLeft.getRelevant();
+            case LOOKRIGHT:
+                return LookRight.getRelevant();
+            default:
+                return null;
         }
-        if (this == LOOKRIGHT) {
-            return LookRight.detect(v);
+    }
+
+    public int getTimeout() {
+        switch (this) {
+            case WINKLEFT:
+                return WinkLeft.getTimeout();
+            case WINKRIGHT:
+                return WinkRight.getTimeout();
+            case LOOKLEFT:
+                return LookLeft.getTimeout();
+            case LOOKRIGHT:
+                return LookRight.getTimeout();
+            default:
+                return 0;
         }
-        return false;
     }
 
     public void setLda() {
-        if (this == WINKLEFT) {
-            WinkLeft.setLda();
-        }
-        if (this == WINKRIGHT) {
-            WinkRight.setLda();
-        }
-        if (this == LOOKLEFT) {
-            LookLeft.setLda();
-        }
-        if (this == LOOKRIGHT) {
-            LookRight.setLda();
+        switch (this) {
+            case WINKLEFT:
+                WinkLeft.setLda();
+            case WINKRIGHT:
+                WinkRight.setLda();
+            case LOOKLEFT:
+                LookLeft.setLda();
+            case LOOKRIGHT:
+                LookRight.setLda();
+            default:
+                return;
         }
     }
 }

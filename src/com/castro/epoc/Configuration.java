@@ -145,19 +145,9 @@ public class Configuration extends Fragment implements PropertyChangeListener {
 
     private Training training;
 
-    private static Events sActiveEvent = Events.BASELINE;
-
-    private double[] mCorrectedBuffer = new double[CHANNELS];
-
-    private boolean mTraining;
-
-    private boolean mLoad = false;
-
     private ViewGroup mCheckView;
 
     private GraphView mGraphView;
-
-    private double mCounter = 0;
 
     private LinearLayout mGraphLayout;
 
@@ -168,6 +158,16 @@ public class Configuration extends Fragment implements PropertyChangeListener {
     private GraphViewData[] mMarkerData = new GraphViewData[] {
             new GraphViewData(0.0, 0.0), new GraphViewData(0.0, 0.0)
     };
+
+    private static Events sActiveEvent = Events.BASELINE;
+
+    private double[] mCorrectedBuffer = new double[CHANNELS];
+
+    private boolean mTraining;
+
+    private boolean mLoad = false;
+
+    private double mCounter = 0;
 
     public Configuration() {
     }
@@ -246,7 +246,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
                     clearButton.setEnabled(true);
                     training.recordValues();
                     mTraining = false;
-                    changeDataButtons(sActiveEvent.file.exists());
+                    changeDataButtons(sActiveEvent.getFile().exists());
                 } else {
                     ActionBarManager.setState("Training");
                     createToast("Visualization stopped to improve performance");
@@ -260,9 +260,9 @@ public class Configuration extends Fragment implements PropertyChangeListener {
         clearButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Files.resetData(sActiveEvent.file);
+                Files.resetData(sActiveEvent.getFile());
                 createToast(sActiveEvent.name() + ": Recorded data cleared");
-                changeDataButtons(sActiveEvent.file.exists());
+                changeDataButtons(sActiveEvent.getFile().exists());
                 if (mLoad) {
                     if (Connection.getInstance().getConnection()) {
                         mLoad = false;
@@ -276,7 +276,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
             public boolean onLongClick(View v) {
                 Files.resetData();
                 createToast("All recorded data cleared");
-                changeDataButtons(sActiveEvent.file.exists());
+                changeDataButtons(sActiveEvent.getFile().exists());
                 if (mLoad) {
                     if (Connection.getInstance().getConnection()) {
                         mLoad = false;
@@ -365,13 +365,14 @@ public class Configuration extends Fragment implements PropertyChangeListener {
         mGraphView.setOrientation(0);
         mGraphView.setScrollable(true);
         mGraphView.setScalable(true);
+        mGraphView.setDrawingCacheEnabled(true);
         mGraphLayout.addView(mGraphView);
     }
 
     // Initiates the marker series for the configuration graph.
     private void initMarker() {
         if (mMarkerSeries == null) {
-            mMarkerSeries = new GraphViewSeries("Realtime", new GraphViewStyle(Color.DKGRAY, 1),
+            mMarkerSeries = new GraphViewSeries("Realtime", new GraphViewStyle(Color.CYAN, 1),
                     mMarkerData);
         } else {
             mGraphView.removeSeries(mMarkerSeries);
@@ -393,7 +394,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 sActiveEvent = Events.values()[position];
-                changeDataButtons(sActiveEvent.file.exists());
+                changeDataButtons(sActiveEvent.getFile().exists());
             }
 
             @Override
@@ -402,8 +403,8 @@ public class Configuration extends Fragment implements PropertyChangeListener {
         });
     }
 
+    // Displays pre-recorded data.
     private void loadData() {
-        // TODO: Stop random data.
         mLoad = true;
         changeConnectedButtons(true);
         removeMarker();
@@ -470,9 +471,6 @@ public class Configuration extends Fragment implements PropertyChangeListener {
                 return;
             }
             mCorrectedBuffer = (double[])event.getNewValue();
-            for (Channels c : Channels.values()) {
-                addData(mCorrectedBuffer[c.ordinal()], c);
-            }
             for (Channels c : Channels.values()) {
                 addData(mCorrectedBuffer[c.ordinal()], c);
             }

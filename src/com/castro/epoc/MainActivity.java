@@ -90,9 +90,7 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
             int pageHeight = view.getHeight();
             if (position < -1) {
                 view.setAlpha(0);
-            } else if (position <= 1) { // [-1,1]
-                // Modify the default slide transition to shrink the page as
-                // well
+            } else if (position <= 1) {
                 float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
                 float vertMargin = pageHeight * (1 - scaleFactor) / 2;
                 float horzMargin = pageWidth * (1 - scaleFactor) / 2;
@@ -101,10 +99,8 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
                 } else {
                     view.setTranslationX(-horzMargin + vertMargin / 2);
                 }
-                // Scale the page down (between MIN_SCALE and 1)
                 view.setScaleX(scaleFactor);
                 view.setScaleY(scaleFactor);
-                // Fade the page relative to its size.
                 view.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE)
                         * (1 - MIN_ALPHA));
             } else {
@@ -128,7 +124,7 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
     private Menu mMenu;
 
     private void actionEyes() {
-        if (EyesNavigation.getActive()) {
+        if (!EyesNavigation.getActive()) {
             mEyesNavigation = new EyesNavigation(mMenu, mViewPager);
             mEyesNavigation.start();
         } else {
@@ -143,8 +139,7 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
     }
 
     private void actionProfiles() {
-        Profiles profiles = new Profiles();
-        profiles.userSelection(this).show();
+        Profiles.getInstance().userSelection(this).show();
     }
 
     private void actionRec() {
@@ -160,14 +155,14 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
     }
 
     private void actionRecon() {
+        Connection.getInstance().closeConnection();
         Connection.getInstance().isConnected(mManager, this);
     }
 
     // Opens the profiles selection dialog if no profile is currently selected.
     private void checkProfiles() {
-        if (Profiles.getActiveUser() == null) {
-            Profiles profiles = new Profiles();
-            profiles.userSelection(this).show();
+        if (Profiles.getInstance().getActiveUser() == null) {
+            Profiles.getInstance().userSelection(this).show();
         }
     }
 
@@ -195,12 +190,16 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
         ActionBarManager.setState("Offline");
         mManager = (UsbManager)getSystemService(Context.USB_SERVICE);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        initViewPager();
+        Connection.getInstance().setMainListener(this);
+        toggleMenuBarIcons(Connection.getInstance().getConnection());
+    }
+
+    // Initiates all ViewPager related methods.
+    private void initViewPager() {
         mViewPager = (ViewPager)findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, new ZoomOut());
-        Connection.getInstance().setMainListener(this);
-        Training.updateLda();
-        toggleMenuBarIcons(Connection.getInstance().getConnection());
         mViewPager.setOffscreenPageLimit(0);
         mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
             @Override
@@ -256,6 +255,7 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
     public void onPause() {
         super.onPause();
         Connection.getInstance().closeConnection();
+        toggleMenuBarIcons(Connection.getInstance().getConnection());
     }
 
     @Override
@@ -264,12 +264,14 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
         checkProfiles();
         Connection.getInstance().isConnected(mManager, this);
         Connection.getInstance().setMainListener(this);
+        toggleMenuBarIcons(Connection.getInstance().getConnection());
     }
 
     @Override
     public void onStop() {
         super.onStop();
         Connection.getInstance().closeConnection();
+        toggleMenuBarIcons(Connection.getInstance().getConnection());
     }
 
     @Override
@@ -277,6 +279,7 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
         if (event.getPropertyName() == "connection") {
             if (!(Boolean)event.getNewValue()) {
                 Connection.getInstance().isConnected(mManager, this);
+                ActionBarManager.setState("Offline");
             }
             toggleMenuBarIcons((Boolean)event.getNewValue());
         } else if (event.getPropertyName() == "battery") {

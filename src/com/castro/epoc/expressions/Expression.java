@@ -27,7 +27,7 @@ public class Expression {
     protected static double[][][] recordings(File file) {
         double[][][] temp = new double[2][][];
         temp[0] = Files.getRecordings(file);
-        temp[1] = Files.getRecordings(Events.BASELINE.file);
+        temp[1] = Files.getRecordings(Events.BASELINE.getFile());
         if (temp[0] == null || temp[1] == null) {
             return null;
         }

@@ -128,7 +128,7 @@ public class Files {
     /** Resets all recorded data. */
     public static void resetData() {
         for (Events e : Events.values()) {
-            final File f = e.file;
+            final File f = e.getFile();
             if (f.exists()) {
                 f.delete();
             }
@@ -170,7 +170,10 @@ public class Files {
     }
 
     public static File sdCard(String location) {
-        String s = "/EPOC/" + Profiles.getActiveUser() + "/" + location + ".xml";
+        if (Profiles.getInstance().getActiveUser() == null) {
+            return null;
+        }
+        String s = "/EPOC/" + Profiles.getInstance().getActiveUser() + "/" + location + ".xml";
         File f = new File(Environment.getExternalStorageDirectory() + s);
         return f;
     }

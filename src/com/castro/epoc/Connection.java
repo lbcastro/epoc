@@ -93,9 +93,10 @@ public class Connection {
     public void closeConnection() {
         if (mDeviceConnection != null) {
             mDeviceConnection.close();
-            mConnected = false;
-            mHandler.removeCallbacks(mUpdateDataRunnable);
         }
+        mConnected = false;
+        mMainListener.propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
+        mHandler.removeCallbacks(mUpdateDataRunnable);
     }
 
     private UsbDeviceConnection defCon(UsbManager m, UsbDevice d) {
@@ -144,8 +145,9 @@ public class Connection {
         if (mDevicesList.size() == 0) {
             return false;
         }
-        if (mDeviceConnection != null)
+        if (mDeviceConnection != null) {
             mDeviceConnection.close();
+        }
         // Loops through all available USB BUS until an EPOC headset is found.
         Iterator<UsbDevice> s = mDevicesList.values().iterator();
         UsbDevice device = null;
@@ -179,8 +181,9 @@ public class Connection {
             device = tempDevice;
             break;
         }
-        if (device == null)
+        if (device == null) {
             return false;
+        }
         mInterface = device.getInterface(1);
         mDeviceConnection.claimInterface(mInterface, true);
         mEndpoint = mInterface.getEndpoint(0);
@@ -306,9 +309,14 @@ public class Connection {
         }
         // Stops if no data was retrieved.
         if (mBuffer == null) {
+            closeConnection();
             return;
         }
         mBuffer = processData(mBuffer);
+        if (mBuffer == null) {
+            closeConnection();
+            return;
+        }
         mLevels = Crypt.getInstance().getLevels(mBuffer);
         for (Channels c : Channels.values()) {
             c.setAverage(mLevels[c.ordinal()]);

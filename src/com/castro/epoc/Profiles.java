@@ -17,29 +17,45 @@ import android.widget.EditText;
 
 public class Profiles {
 
-    public static String getActiveUser() {
-        return sActiveUser;
+    private static Profiles instance = null;
+
+    public static Profiles getInstance() {
+        if (instance == null) {
+            synchronized (Profiles.class) {
+                Profiles inst = instance;
+                if (inst == null) {
+                    synchronized (Profiles.class) {
+                        inst = new Profiles();
+                    }
+                    instance = inst;
+                }
+            }
+        }
+        return instance;
     }
 
-    public static File getUserFile() {
+    public String getActiveUser() {
+        return mActiveUser;
+    }
+
+    public File getUserFile() {
         return sUserFile;
     }
 
     public CharSequence[] mUsers;
 
-    private static String sActiveUser = null;
+    private String mActiveUser = null;
 
-    private static AlertDialog sDialog;
+    private AlertDialog sDialog;
 
-    private static File sUserFile = new File(Environment.getExternalStorageDirectory()
-            + "/EPOC/users.xml");
+    private File sUserFile = new File(Environment.getExternalStorageDirectory() + "/EPOC/users.xml");
 
     /** Getters and setters. */
-    public static void setActiveUser(String s) {
-        sActiveUser = s;
+    public void setActiveUser(String s) {
+        mActiveUser = s;
     }
 
-    public Profiles() {
+    protected Profiles() {
     }
 
     /**
@@ -112,7 +128,7 @@ public class Profiles {
             public void onClick(DialogInterface dialog, int which) {
                 String s = input.getText().toString();
                 addUser(s);
-                sActiveUser = s;
+                mActiveUser = s;
                 ActionBarManager.setUser(s);
                 // TODO: UPDATE MACHINE LEARNING HERE
             }
@@ -157,9 +173,10 @@ public class Profiles {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                sActiveUser = mUsers[which].toString();
+                mActiveUser = mUsers[which].toString();
+                System.out.println(mActiveUser);
                 ActionBarManager.setUser(mUsers[which].toString());
-                // TODO: UPDATE MACHINE LEARNING HERE
+                Training.updateLda();
             }
         });
         sDialog = builder.create();

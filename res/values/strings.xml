@@ -20,7 +20,6 @@
     <string name="title_activity_launcher">EPOC Interface</string>
     <string name="action_recon">Reconnect</string>
     <string name="action_jump">Navigate</string>
-    <string name="action_exit">Exit</string>
     <string name="action_rec">Record</string>
     <string name="concentration_left1">Relaxed</string>
     <string name="concentration_right1">Active</string>
