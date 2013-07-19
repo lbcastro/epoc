@@ -78,7 +78,7 @@ public class Connection {
 
     private List<PropertyChangeListener> mGyroListener = new ArrayList<PropertyChangeListener>();
 
-    private PropertyChangeListener mMainListener;
+    private List<PropertyChangeListener> mConnectionListener = new ArrayList<PropertyChangeListener>();
 
     private Runnable mUpdateDataRunnable = new Runnable() {
         @Override
@@ -95,7 +95,7 @@ public class Connection {
             mDeviceConnection.close();
         }
         mConnected = false;
-        mMainListener.propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
+        sendConnectionProperty();
         mHandler.removeCallbacks(mUpdateDataRunnable);
     }
 
@@ -158,7 +158,7 @@ public class Connection {
             if (tempDevice == null) {
                 continue;
             }
-            /** If needed, get needed permissions. */
+            // If needed, get permissions
             while (!manager.hasPermission(tempDevice))
                 getPermission(manager, tempDevice, context);
             // Try to establish a connection to the current device. Stops if the
@@ -190,15 +190,13 @@ public class Connection {
         // Check if the headset is on.
         byte[] buffer = new byte[32];
         double detection = mDeviceConnection.bulkTransfer(mEndpoint, buffer, PACKET_SIZE, 1000);
-        if (detection == -1.0)
+        if (detection == -1.0) {
             return false;
+        }
         // At this point, connection has been established.
         mConnected = true;
+        sendConnectionProperty();
         ActionBarManager.setState("Online");
-        for (PropertyChangeListener listener : mDataListener) {
-            listener.propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
-        }
-        mMainListener.propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
         Crypt.getInstance().initCipher(mSerialNumber);
         // TODO: Random data management.
         mHandler.removeCallbacks(mUpdateDataRunnable);
@@ -244,7 +242,7 @@ public class Connection {
             mCounter = mDecryptedBuffer[0];
         }
         if (mDecryptedBuffer[0] < 0) {
-            Battery.setLevel(this, 0xFF & mDecryptedBuffer[0], mMainListener);
+            Battery.setLevel(0xFF & mDecryptedBuffer[0]);
             mCounter = -1;
             mLossValue = Math.round((mLossCounter / 128.0) * 100.0);
             ActionBarManager.setLoss(mLossValue);
@@ -253,6 +251,39 @@ public class Connection {
             mCounter = mDecryptedBuffer[0];
         }
         return mDecryptedBuffer;
+    }
+
+    private void sendConnectionProperty() {
+        for (PropertyChangeListener listener : mConnectionListener) {
+            listener.propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
+        }
+    }
+
+    private void sendDataProperty() {
+        for (PropertyChangeListener listener : mDataListener) {
+            listener.propertyChange(new PropertyChangeEvent(this, "levels", 0, mCorrectedBuffer));
+            listener.propertyChange(new PropertyChangeEvent(this, "buffer", mCounter, mBuffer));
+        }
+    }
+
+    private void sendGyroProperty() {
+        if (mGyroListener != null) {
+            mGyro[0] = mBuffer[29];
+            mGyro[1] = mBuffer[30];
+            for (PropertyChangeListener listener : mGyroListener) {
+                listener.propertyChange(new PropertyChangeEvent(this, "gyro", 0, mGyro));
+            }
+        }
+    }
+
+    public void setConnectionListener(PropertyChangeListener listener, boolean b) {
+        if (b) {
+            if (!mConnectionListener.contains(listener)) {
+                mConnectionListener.add(listener);
+            }
+        } else if (mConnectionListener.contains(listener)) {
+            mConnectionListener.remove(listener);
+        }
     }
 
     public void setDataListener(PropertyChangeListener listener, boolean b) {
@@ -278,18 +309,13 @@ public class Connection {
         }
     }
 
-    public void setMainListener(PropertyChangeListener newListener) {
-        mMainListener = newListener;
-    }
-
     // Method to retrieve, process and deliver data to other classes.
     private void updateData() {
         mHandler.postDelayed(mUpdateDataRunnable, SAMPLING);
         // Stops if connection is not established or failed.
-        if (mDeviceConnection == null) {
+        if (mDeviceConnection == null || mEndpoint == null) {
             mConnected = false;
-            mMainListener
-                    .propertyChange(new PropertyChangeEvent(this, "connection", 0, mConnected));
+            sendConnectionProperty();
             return;
         }
         // Stops when there is an error retrieving data.
@@ -297,13 +323,11 @@ public class Connection {
             if (mDeviceConnection != null) {
                 mDeviceConnection.close();
                 mDeviceConnection = null;
+                sendConnectionProperty();
             }
             if (mConnected) {
                 mConnected = false;
-                for (PropertyChangeListener listener : mDataListener) {
-                    listener.propertyChange(new PropertyChangeEvent(this, "connection", 0,
-                            mConnected));
-                }
+                sendConnectionProperty();
             }
             return;
         }
@@ -322,17 +346,9 @@ public class Connection {
             c.setAverage(mLevels[c.ordinal()]);
             mCorrectedBuffer[c.ordinal()] = Math
                     .round((mLevels[c.ordinal()] - c.getAverage()) * 100.0) / 100.0;
+            // mCorrectedBuffer[c.ordinal()] = mLevels[c.ordinal()];
         }
-        for (PropertyChangeListener listener : mDataListener) {
-            listener.propertyChange(new PropertyChangeEvent(this, "levels", 0, mCorrectedBuffer));
-            listener.propertyChange(new PropertyChangeEvent(this, "buffer", mCounter, mBuffer));
-        }
-        if (mGyroListener != null) {
-            mGyro[0] = mBuffer[29];
-            mGyro[1] = mBuffer[30];
-            for (PropertyChangeListener listener : mGyroListener) {
-                listener.propertyChange(new PropertyChangeEvent(this, "gyro", 0, mGyro));
-            }
-        }
+        sendDataProperty();
+        sendGyroProperty();
     }
 }

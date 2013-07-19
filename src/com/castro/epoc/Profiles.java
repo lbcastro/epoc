@@ -34,14 +34,6 @@ public class Profiles {
         return instance;
     }
 
-    public String getActiveUser() {
-        return mActiveUser;
-    }
-
-    public File getUserFile() {
-        return sUserFile;
-    }
-
     public CharSequence[] mUsers;
 
     private String mActiveUser = null;
@@ -49,11 +41,6 @@ public class Profiles {
     private AlertDialog sDialog;
 
     private File sUserFile = new File(Environment.getExternalStorageDirectory() + "/EPOC/users.xml");
-
-    /** Getters and setters. */
-    public void setActiveUser(String s) {
-        mActiveUser = s;
-    }
 
     protected Profiles() {
     }
@@ -90,6 +77,10 @@ public class Profiles {
         mUsers = getAllUsers(f);
     }
 
+    public String getActiveUser() {
+        return mActiveUser;
+    }
+
     /**
      * Gets all saved user profiles.
      * 
@@ -110,6 +101,10 @@ public class Profiles {
             allUsers[x] = oneUser;
         }
         return allUsers;
+    }
+
+    public File getUserFile() {
+        return sUserFile;
     }
 
     /**
@@ -143,6 +138,11 @@ public class Profiles {
         return dialog;
     }
 
+    /** Getters and setters. */
+    public void setActiveUser(String s) {
+        mActiveUser = s;
+    }
+
     /**
      * Prompts a profile selection dialog.
      * 
@@ -174,7 +174,6 @@ public class Profiles {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mActiveUser = mUsers[which].toString();
-                System.out.println(mActiveUser);
                 ActionBarManager.setUser(mUsers[which].toString());
                 Training.updateLda();
             }

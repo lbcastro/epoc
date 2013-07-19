@@ -1,12 +1,16 @@
 
 package com.castro.epoc;
 
+import static com.castro.epoc.Global.CALC_PAGE;
+import static com.castro.epoc.Global.CONC_PAGE;
+import static com.castro.epoc.Global.CONFIG_PAGE;
+import static com.castro.epoc.Global.CONT_PAGE;
+import static com.castro.epoc.Global.KEY_PAGE;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import static com.castro.epoc.Global.*;
 
 public class Help extends DialogFragment {
 

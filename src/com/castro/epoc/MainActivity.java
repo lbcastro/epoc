@@ -85,6 +85,7 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
 
         private static final float MIN_ALPHA = 1f;
 
+        @Override
         public void transformPage(View view, float position) {
             int pageWidth = view.getWidth();
             int pageHeight = view.getHeight();
@@ -119,6 +120,8 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
 
     private EyesNavigation mEyesNavigation;
 
+    private AlertDialog mProfilesDialog;
+
     private int mPages = 5;
 
     private Menu mMenu;
@@ -127,8 +130,10 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
         if (!EyesNavigation.getActive()) {
             mEyesNavigation = new EyesNavigation(mMenu, mViewPager);
             mEyesNavigation.start();
+            ToastManager.create("Eyes navigation is now active", this);
         } else {
             mEyesNavigation.stop();
+            ToastManager.create("Eyes navigation deactivated", this);
         }
     }
 
@@ -139,16 +144,19 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
     }
 
     private void actionProfiles() {
-        Profiles.getInstance().userSelection(this).show();
+        mProfilesDialog = Profiles.getInstance().userSelection(this);
+        mProfilesDialog.show();
     }
 
     private void actionRec() {
         if (mRecording == null) {
             mRecording = new Recording();
             mRecording.start();
+            ToastManager.create("Recording global data", this);
             mMenu.findItem(R.id.action_rec).setIcon(R.drawable.rec_stop);
         } else {
             mRecording.stop();
+            ToastManager.create("Finished recording global data", this);
             mRecording = null;
             mMenu.findItem(R.id.action_rec).setIcon(R.drawable.rec_start);
         }
@@ -162,8 +170,31 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
     // Opens the profiles selection dialog if no profile is currently selected.
     private void checkProfiles() {
         if (Profiles.getInstance().getActiveUser() == null) {
-            Profiles.getInstance().userSelection(this).show();
+            mProfilesDialog = Profiles.getInstance().userSelection(this);
+            mProfilesDialog.show();
         }
+    }
+
+    // Initiates all ViewPager related methods.
+    private void initViewPager() {
+        mViewPager = (ViewPager)findViewById(R.id.pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setPageTransformer(true, new ZoomOut());
+        mViewPager.setOffscreenPageLimit(0);
+        mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+            }
+
+            @Override
+            public void onPageSelected(int page) {
+                ActiveFragment.set(page);
+            }
+        });
     }
 
     // Dialog to quickly switch the ViewPager fragment.
@@ -191,36 +222,14 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
         mManager = (UsbManager)getSystemService(Context.USB_SERVICE);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         initViewPager();
-        Connection.getInstance().setMainListener(this);
         toggleMenuBarIcons(Connection.getInstance().getConnection());
-    }
-
-    // Initiates all ViewPager related methods.
-    private void initViewPager() {
-        mViewPager = (ViewPager)findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setPageTransformer(true, new ZoomOut());
-        mViewPager.setOffscreenPageLimit(0);
-        mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int arg0, float arg1, int arg2) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int arg0) {
-            }
-
-            @Override
-            public void onPageSelected(int page) {
-                ActiveFragment.set(page);
-            }
-        });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         mMenu = menu;
+        Battery.setMenu(mMenu);
         toggleMenuBarIcons(Connection.getInstance().getConnection());
         return true;
     }
@@ -255,7 +264,11 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
     public void onPause() {
         super.onPause();
         Connection.getInstance().closeConnection();
+        Connection.getInstance().setConnectionListener(this, false);
         toggleMenuBarIcons(Connection.getInstance().getConnection());
+        if (mProfilesDialog != null && mProfilesDialog.isShowing()) {
+            mProfilesDialog.cancel();
+        }
     }
 
     @Override
@@ -263,7 +276,7 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
         super.onResume();
         checkProfiles();
         Connection.getInstance().isConnected(mManager, this);
-        Connection.getInstance().setMainListener(this);
+        Connection.getInstance().setConnectionListener(this, true);
         toggleMenuBarIcons(Connection.getInstance().getConnection());
     }
 
@@ -271,19 +284,22 @@ public class MainActivity extends FragmentActivity implements PropertyChangeList
     public void onStop() {
         super.onStop();
         Connection.getInstance().closeConnection();
+        Connection.getInstance().setConnectionListener(this, false);
         toggleMenuBarIcons(Connection.getInstance().getConnection());
+        if (mProfilesDialog != null && mProfilesDialog.isShowing()) {
+            mProfilesDialog.cancel();
+        }
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
         if (event.getPropertyName() == "connection") {
-            if (!(Boolean)event.getNewValue()) {
+            boolean connectionStatus = (Boolean)event.getNewValue();
+            if (!connectionStatus) {
                 Connection.getInstance().isConnected(mManager, this);
                 ActionBarManager.setState("Offline");
             }
-            toggleMenuBarIcons((Boolean)event.getNewValue());
-        } else if (event.getPropertyName() == "battery") {
-            Battery.changeDrawable(mMenu);
+            toggleMenuBarIcons(connectionStatus);
         }
     }
 

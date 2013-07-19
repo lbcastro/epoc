@@ -256,6 +256,7 @@ public class Calculation extends Fragment implements PropertyChangeListener {
         if (mCalculationsCounter >= 10) {
             mCalculationsCounter = 0;
             levelUp();
+            ToastManager.create("Level up (" + mActiveLevel + ")", getActivity());
             if (mActiveLevel > 3) {
                 toggleStart();
             }
@@ -294,10 +295,11 @@ public class Calculation extends Fragment implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
-        if (event.getPropertyName() == "update") {
+        if (event.getPropertyName() == "levels") {
             mCorrectedBuffer = (double[])event.getNewValue();
             if (LookLeft.detect(mCorrectedBuffer)) {
                 checkSide(0);
+                ToastManager.create("LOOKLEFT", getActivity());
             }
             if (LookRight.detect(mCorrectedBuffer)) {
                 checkSide(1);

@@ -5,6 +5,7 @@ import static com.castro.epoc.Global.CHANNELS;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -24,17 +25,17 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
 
     private TextView[] mTextViewArray = new TextView[27];
 
-    private int mCurrentRow;
+    private int mCurrentRow = 2;
 
-    private int mTotalRows;
+    private int mTotalRows = 3;
 
-    private int mTotalColumns;
+    private int mTotalColumns = 9;
 
-    private int[] mRowNumber;
+    private int[] mRowNumber = new int[9];
 
-    private int[] mColumnNumber;
+    private int[] mColumnNumber = new int[3];
 
-    private int mCurrentColumn;
+    private int mCurrentColumn = 8;
 
     private boolean mColumnSelected = false;
 
@@ -56,6 +57,10 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
 
     private double[] mCorrectedBuffer = new double[CHANNELS];
 
+    private static int sLeftCount = 0;
+
+    private static int sRightCount = 0;
+
     public Keyboard() {
     }
 
@@ -63,12 +68,12 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
     // previous column. Also stores the index of the current column.
     private void changeColumn(int column, int color) {
         for (int x = 0; x < mTotalRows; x++) {
-            int current = mCurrentColumn + (x * mTotalColumns);
+            int current = column + (x * mTotalColumns);
             for (int y = 0; y < mTotalColumns; y++) {
                 if (mRowNumber[y] == current) {
                     if (color != mColorRegular) {
                         mTextViewArray[current].setTextColor(mColorFinal);
-                    } else if (mColumnSelected) {
+                    } else if (!mColumnSelected) {
                         mTextViewArray[current].setTextColor(mColorSelected);
                     }
                 }
@@ -81,8 +86,8 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
     // previous row. Also stores the index of the current row.
     private void changeRow(int row, int color) {
         for (int x = 0; x < mTotalColumns; x++) {
-            mTextViewArray[x + (mCurrentRow * mTotalColumns)].setTextColor(color);
-            mRowNumber[x] = x + (mCurrentRow * mTotalColumns);
+            mTextViewArray[x + (row * mTotalColumns)].setTextColor(color);
+            mRowNumber[x] = x + (row * mTotalColumns);
         }
     }
 
@@ -126,6 +131,9 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
     public void onResume() {
         super.onResume();
         Connection.getInstance().setDataListener(this, true);
+        if (mStarted) {
+            refreshColors();
+        }
     }
 
     @Override
@@ -134,18 +142,29 @@ public class Keyboard extends Fragment implements PropertyChangeListener {
         Connection.getInstance().setDataListener(this, false);
     }
 
+    private void refreshColors() {
+        mCurrentRow -= 1;
+        mCurrentColumn -= 1;
+        nextRow();
+        nextColumn();
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent event) {
         if (event.getPropertyName() == "levels") {
             mCorrectedBuffer = (double[])event.getNewValue();
             if (WinkLeft.detect(mCorrectedBuffer)) {
+                ToastManager.create("WINKLEFT " + sLeftCount, getActivity());
+                System.out.println("WINKLEFT - " + sLeftCount);
+                sLeftCount += 1;
                 selectCurrent();
             }
             if (WinkRight.detect(mCorrectedBuffer)) {
+                ToastManager.create("WINKRIGHT " + sRightCount, getActivity());
+                System.out.println("WINKRIGHT - " + sRightCount);
+                sRightCount += 1;
                 selectNext();
             }
-        } else {
-            return;
         }
     }
 

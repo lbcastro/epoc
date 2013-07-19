@@ -68,6 +68,7 @@ public class Look extends Expression {
             values[x][1] = data[1][x - eventLength][index[1]];
             classes[x] = 2;
         }
-        return new LDA(values, classes, true);
+        LDA temp = new LDA(values, classes, true);
+        return temp;
     }
 }

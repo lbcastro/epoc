@@ -1,9 +1,6 @@
 
 package com.castro.epoc;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import android.view.Menu;
 
 public class Battery {
@@ -13,6 +10,8 @@ public class Battery {
     private static int sPercentage;
 
     private static boolean sUpdated = false;
+
+    private static Menu sMenu;
 
     /**
      * Finds the battery level from a specified byte value.
@@ -72,8 +71,9 @@ public class Battery {
     }
 
     public static void changeDrawable(Menu menu) {
-        if (menu == null)
+        if (menu == null) {
             return;
+        }
         menu.findItem(R.id.action_battery).setIcon(getDrawable(sLevel));
     }
 
@@ -107,8 +107,7 @@ public class Battery {
      * 
      * @param battery Battery level
      */
-    public static void setLevel(Object source, int encryptedLevel,
-            PropertyChangeListener mainListener) {
+    public static void setLevel(int encryptedLevel) {
         sPercentage = calculatePercentage(encryptedLevel);
         sUpdated = false;
         if (sPercentage >= 75 && sLevel != 4) {
@@ -128,8 +127,14 @@ public class Battery {
             sUpdated = true;
         }
         if (sUpdated) {
-            mainListener.propertyChange(new PropertyChangeEvent(source, "battery", null, sLevel));
+            changeDrawable(sMenu);
+            // mainListener.propertyChange(new PropertyChangeEvent(source,
+            // "battery", null, sLevel));
         }
+    }
+
+    public static void setMenu(Menu menu) {
+        sMenu = menu;
     }
 
     private Battery() {

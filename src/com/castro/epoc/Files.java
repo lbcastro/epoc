@@ -2,6 +2,7 @@
 package com.castro.epoc;
 
 import java.io.File;
+import static com.castro.epoc.Global.CHANNELS;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +62,10 @@ public class Files {
             Document doc = b.newDocument();
             Element root = doc.createElement(s);
             doc.appendChild(root);
+            final Element max = doc.createElement("max");
+            final Element min = doc.createElement("min");
+            root.appendChild(max);
+            root.appendChild(min);
             saveChanges(doc, f);
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -123,6 +128,44 @@ public class Files {
             recTotal[x] = recDouble;
         }
         return recTotal;
+    }
+
+    public static double[] getAverage(File f) {
+        double[][] total = getRecordings(f);
+        if (total.length == 0) {
+            return null;
+        }
+        if (total.length == 1) {
+            return total[0];
+        }
+        double[] average = new double[CHANNELS];
+        for (int x = 0; x < total.length; x++) {
+            for (int y = 0; y < CHANNELS; y++) {
+                average[y] += total[x][y];
+            }
+        }
+        for (int x = 0; x < CHANNELS; x++) {
+            average[x] /= total.length;
+        }
+        return average;
+    }
+
+    /**
+     * Retrieves saved maximum and minimum values for a specified file.
+     * 
+     * @param f
+     * @return
+     */
+    public static double[] getRanges(File f) {
+        final Document document = getDoc(f);
+        final Element max = (Element)document.getElementsByTagName("max").item(0);
+        final Element min = (Element)document.getElementsByTagName("min").item(0);
+        double maxvalue = Double.parseDouble(max.getTextContent());
+        double minvalue = Double.parseDouble(min.getTextContent());
+        double[] temp = {
+                maxvalue, minvalue
+        };
+        return temp;
     }
 
     /** Resets all recorded data. */

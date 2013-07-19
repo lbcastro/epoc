@@ -15,7 +15,9 @@ public final class Global {
 
     public static final int PACKET_SIZE = 32;
 
-    public static final int Y_RANGE = 800;
+    public static final int Y_RANGE_MAX = 800;
+
+    public static final int Y_RANGE_MIN = -800;
 
     public static final int CHANNELS = 14;
 

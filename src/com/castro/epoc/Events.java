@@ -90,4 +90,33 @@ public enum Events {
                 return;
         }
     }
+
+    public void refineLda() {
+        switch (this) {
+            case WINKLEFT:
+                WinkLeft.refineRecordings(WINKLEFT);
+                break;
+            case WINKRIGHT:
+                WinkRight.refineRecordings(WINKRIGHT);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void setRanges() {
+        switch (this) {
+            case WINKLEFT:
+                WinkLeft.setRanges();
+                break;
+            case WINKRIGHT:
+                WinkRight.setRanges();
+                break;
+            case LOOKLEFT:
+                LookLeft.setRanges();
+                break;
+            default:
+                break;
+        }
+    }
 }

@@ -3,8 +3,8 @@ package com.castro.epoc;
 
 import android.graphics.Color;
 
-import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphView.GraphViewData;
+import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewStyle;
 
 public class ChannelsValues {

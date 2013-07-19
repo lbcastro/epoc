@@ -78,7 +78,7 @@ public class LookRight extends Look {
     }
 
     public static int[] getRelevant() {
-        return sRelevantChannels;
+        return indexes(sRelevantChannels);
     }
 
     public static int getTimeout() {

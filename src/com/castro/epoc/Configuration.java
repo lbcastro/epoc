@@ -2,8 +2,9 @@
 package com.castro.epoc;
 
 import static com.castro.epoc.Global.CHANNELS;
+import static com.castro.epoc.Global.Y_RANGE_MIN;
 import static com.castro.epoc.Global.SAMPLES;
-import static com.castro.epoc.Global.Y_RANGE;
+import static com.castro.epoc.Global.Y_RANGE_MAX;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -27,7 +28,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.jjoe64.graphview.GraphView;
@@ -219,16 +219,6 @@ public class Configuration extends Fragment implements PropertyChangeListener {
         mFragmentView.findViewById(R.id.configuration_button_clear).setEnabled(b);
     }
 
-    /**
-     * Creates a toast with the provided text string.
-     * 
-     * @param text Text to be displayed
-     */
-    public void createToast(String text) {
-        Toast toast = Toast.makeText(getActivity(), text, Toast.LENGTH_LONG);
-        toast.show();
-    }
-
     // Initiates all the configuration module buttons.
     private void initButtons() {
         final ToggleButton toggleButton = (ToggleButton)mFragmentView
@@ -249,7 +239,8 @@ public class Configuration extends Fragment implements PropertyChangeListener {
                     changeDataButtons(sActiveEvent.getFile().exists());
                 } else {
                     ActionBarManager.setState("Training");
-                    createToast("Visualization stopped to improve performance");
+                    ToastManager.create("Visualization stopped to improve performance",
+                            getActivity());
                     clearButton.setEnabled(false);
                     training = new Training(sActiveEvent);
                     mTraining = true;
@@ -261,7 +252,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
             @Override
             public void onClick(View v) {
                 Files.resetData(sActiveEvent.getFile());
-                createToast(sActiveEvent.name() + ": Recorded data cleared");
+                ToastManager.create(sActiveEvent.name() + ": Recorded data cleared", getActivity());
                 changeDataButtons(sActiveEvent.getFile().exists());
                 if (mLoad) {
                     if (Connection.getInstance().getConnection()) {
@@ -275,7 +266,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
             @Override
             public boolean onLongClick(View v) {
                 Files.resetData();
-                createToast("All recorded data cleared");
+                ToastManager.create("All recorded data cleared", getActivity());
                 changeDataButtons(sActiveEvent.getFile().exists());
                 if (mLoad) {
                     if (Connection.getInstance().getConnection()) {
@@ -344,7 +335,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
             }
         }
         mGraphView.setViewPort(0.0, 128.0);
-        mGraphView.setManualYAxisBounds(Y_RANGE, -Y_RANGE);
+        mGraphView.setManualYAxisBounds(Y_RANGE_MAX, Y_RANGE_MIN);
         initMarker();
     }
 
@@ -410,7 +401,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
         removeMarker();
         final File f = Files.sdCard(sActiveEvent.name().toLowerCase(Locale.getDefault()));
         if (!f.exists()) {
-            createToast("Requested file does not exist");
+            ToastManager.create("Requested file does not exist", getActivity());
             return;
         }
         double[][] values = Files.getRecordings(f);
@@ -427,6 +418,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
             c.getSeries().resetData(c.getData());
         }
         mGraphView.setManualYAxisBounds(max, min);
+        mGraphView.setViewPort(0.0, values.length - 1);
     }
 
     @Override
@@ -439,14 +431,15 @@ public class Configuration extends Fragment implements PropertyChangeListener {
     @Override
     public void onPause() {
         super.onPause();
-        Connection.getInstance().setDataListener(this, false);
+        setListeners(false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Connection.getInstance().setDataListener(this, true);
+        setListeners(true);
         if (Connection.getInstance().getConnection()) {
+            Quality.refreshAll(mCheckView);
             changeConnectedButtons(true);
         } else {
             changeConnectedButtons(false);
@@ -461,7 +454,7 @@ public class Configuration extends Fragment implements PropertyChangeListener {
     @Override
     public void onStop() {
         super.onStop();
-        Connection.getInstance().setDataListener(this, false);
+        setListeners(false);
     }
 
     @Override
@@ -509,17 +502,22 @@ public class Configuration extends Fragment implements PropertyChangeListener {
             c.getSeries().resetData(c.getData());
         }
         mGraphView.setViewPort(0.0, 128.0);
-        mGraphView.setManualYAxisBounds(Y_RANGE, -Y_RANGE);
+        mGraphView.setManualYAxisBounds(Y_RANGE_MAX, Y_RANGE_MIN);
         mGraphView.invalidate();
         initMarker();
+    }
+
+    private void setListeners(boolean b) {
+        Connection.getInstance().setDataListener(this, b);
+        Connection.getInstance().setConnectionListener(this, b);
     }
 
     private void setMarker() {
         if (mTraining) {
             return;
         }
-        mMarkerData[0] = new GraphViewData(mCounter, Y_RANGE);
-        mMarkerData[1] = new GraphViewData(mCounter, -Y_RANGE);
+        mMarkerData[0] = new GraphViewData(mCounter, Y_RANGE_MAX);
+        mMarkerData[1] = new GraphViewData(mCounter, Y_RANGE_MIN);
         mMarkerSeries.resetData(mMarkerData);
     }
 }

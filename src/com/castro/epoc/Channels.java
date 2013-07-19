@@ -100,8 +100,8 @@ import static com.castro.epoc.ChannelsValues.T8_QUAL;
 import static com.castro.epoc.ChannelsValues.T8_SERIES;
 import static com.castro.epoc.Global.FILTER;
 
-import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphView.GraphViewData;
+import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewStyle;
 
 public enum Channels {

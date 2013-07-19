@@ -1,9 +1,10 @@
 
 package com.castro.epoc;
 
+import static com.castro.epoc.Global.CONT_PAGE;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import static com.castro.epoc.Global.CONT_PAGE;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -65,6 +66,10 @@ public class Contacts extends Fragment implements PropertyChangeListener {
     }
 
     private void enableGyro() {
+        if (!Connection.getInstance().getConnection()) {
+            ToastManager.create("Not connected", getActivity());
+            return;
+        }
         mActive = true;
         mGyroText.setText("Retrieving gyroscope data");
     }
@@ -186,13 +191,4 @@ public class Contacts extends Fragment implements PropertyChangeListener {
         final int last = (sActiveContact == 4 ? 0 : sActiveContact + 1);
         changeAlpha(last);
     }
-    // private void setChangeListener(boolean b) {
-    // if (b) {
-    // if (Connection.getInstance().getConnection()) {
-    // Connection.getInstance().setGyroListener(this, b);
-    // }
-    // } else {
-    // Connection.getInstance().setGyroListener(this, b);
-    // }
-    // }
 }

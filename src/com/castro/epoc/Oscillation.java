@@ -66,6 +66,10 @@ public class Oscillation extends Fragment implements PropertyChangeListener {
             return 20 * Math.log10(Math.pow(value, 2));
         }
 
+        // TODO: Select a single channel to display oscillation results.
+        // TODO: Display all results divided according to the electrode's
+        // position.
+
         /**
          * Calculates the frequencies for the specified array of data. Useful
          * when a large sample is used, converting the frequencies to integrals.
